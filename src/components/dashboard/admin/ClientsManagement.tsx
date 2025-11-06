@@ -26,6 +26,15 @@ export default function ClientsManagement() {
 
   const fetchClients = async () => {
     try {
+      // First get all admin user IDs
+      const { data: adminRoles } = await supabase
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "admin");
+
+      const adminIds = adminRoles?.map(role => role.user_id) || [];
+
+      // Get profiles excluding admins
       const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
@@ -33,19 +42,21 @@ export default function ClientsManagement() {
 
       if (profilesError) throw profilesError;
 
-      // Get car count for each client
+      // Filter out admins and get car count for each client
       const clientsWithCars = await Promise.all(
-        (profilesData || []).map(async (profile) => {
-          const { count } = await supabase
-            .from("cars")
-            .select("*", { count: "exact", head: true })
-            .eq("owner_id", profile.id);
+        (profilesData || [])
+          .filter(profile => !adminIds.includes(profile.id))
+          .map(async (profile) => {
+            const { count } = await supabase
+              .from("cars")
+              .select("*", { count: "exact", head: true })
+              .eq("owner_id", profile.id);
 
-          return {
-            ...profile,
-            car_count: count || 0,
-          };
-        })
+            return {
+              ...profile,
+              car_count: count || 0,
+            };
+          })
       );
 
       setClients(clientsWithCars);

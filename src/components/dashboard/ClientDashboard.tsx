@@ -4,9 +4,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Car, Calendar, Wrench, LogOut } from "lucide-react";
+import { Loader2, Car, Calendar, Wrench, LogOut, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import AddCarDialog from "./client/AddCarDialog";
 
 type Car = {
   id: string;
@@ -50,6 +51,7 @@ export default function ClientDashboard() {
   const [cars, setCars] = useState<Car[]>([]);
   const [services, setServices] = useState<{ [carId: string]: Service[] }>({});
   const [loading, setLoading] = useState(true);
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -108,6 +110,11 @@ export default function ClientDashboard() {
     navigate("/auth");
   };
 
+  const handleCarAdded = () => {
+    setShowAddDialog(false);
+    fetchCarsAndServices();
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -132,11 +139,17 @@ export default function ClientDashboard() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">Olá! 👋</h2>
-          <p className="text-muted-foreground">
-            Bem-vindo à sua área de cliente. Aqui pode ver os seus carros e o histórico de serviços.
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Os Meus Carros</h2>
+            <p className="text-muted-foreground">
+              Gerencie os seus veículos e veja o histórico de serviços.
+            </p>
+          </div>
+          <Button onClick={() => setShowAddDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Carro
+          </Button>
         </div>
 
         {cars.length === 0 ? (
@@ -230,6 +243,13 @@ export default function ClientDashboard() {
           </div>
         )}
       </main>
+
+      <AddCarDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onCarAdded={handleCarAdded}
+        userId={user?.id || ""}
+      />
     </div>
   );
 }
