@@ -20,9 +20,9 @@ export default function AddCarDialog({ open, onOpenChange, onCarAdded, userId }:
     marca: "",
     modelo: "",
     matricula: "",
-    ano: new Date().getFullYear(),
+    ano: new Date().getFullYear().toString(),
     cor: "",
-    quilometragem: 0,
+    quilometragem: "0",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,7 +32,12 @@ export default function AddCarDialog({ open, onOpenChange, onCarAdded, userId }:
     try {
       const { error } = await supabase.from("cars").insert([
         {
-          ...formData,
+          marca: formData.marca,
+          modelo: formData.modelo,
+          matricula: formData.matricula,
+          ano: parseInt(formData.ano),
+          cor: formData.cor,
+          quilometragem: parseInt(formData.quilometragem),
           owner_id: userId,
         },
       ]);
@@ -48,9 +53,9 @@ export default function AddCarDialog({ open, onOpenChange, onCarAdded, userId }:
         marca: "",
         modelo: "",
         matricula: "",
-        ano: new Date().getFullYear(),
+        ano: new Date().getFullYear().toString(),
         cor: "",
-        quilometragem: 0,
+        quilometragem: "0",
       });
 
       onCarAdded();
@@ -112,7 +117,7 @@ export default function AddCarDialog({ open, onOpenChange, onCarAdded, userId }:
                 id="ano"
                 type="number"
                 value={formData.ano}
-                onChange={(e) => setFormData({ ...formData, ano: parseInt(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, ano: e.target.value })}
                 required
               />
             </div>
@@ -135,7 +140,7 @@ export default function AddCarDialog({ open, onOpenChange, onCarAdded, userId }:
                 type="number"
                 value={formData.quilometragem}
                 onChange={(e) =>
-                  setFormData({ ...formData, quilometragem: parseInt(e.target.value) })
+                  setFormData({ ...formData, quilometragem: e.target.value })
                 }
                 required
               />
