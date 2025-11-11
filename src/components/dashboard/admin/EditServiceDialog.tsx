@@ -67,10 +67,15 @@ export default function EditServiceDialog({
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const workHours = parseFloat(formData.get("work_hours") as string);
-    const costPerHour = parseFloat(formData.get("cost_per_hour") as string);
-    const partsCost = parseFloat(formData.get("parts_cost") as string);
-    const finalPrice = parseFloat(formData.get("final_price") as string);
+    const workHours = parseFloat(formData.get("work_hours") as string) || 0;
+    const costPerHour = parseFloat(formData.get("cost_per_hour") as string) || 0;
+    const partsCost = parseFloat(formData.get("parts_cost") as string) || 0;
+    
+    // Calcular preço final: (horas × custo/hora) + custo das peças
+    const finalPrice = (workHours * costPerHour) + partsCost;
+    
+    // Calcular lucro: preço final - custo das peças
+    const profit = finalPrice - partsCost;
 
     try {
       const { error } = await supabase
@@ -81,10 +86,11 @@ export default function EditServiceDialog({
           status: formData.get("status") as "agendado" | "em_processo" | "concluido",
           description: formData.get("description") as string || null,
           parts_used: formData.get("parts_used") as string || null,
-          parts_cost: partsCost || 0,
-          work_hours: workHours || 0,
-          cost_per_hour: costPerHour || 0,
+          parts_cost: partsCost,
+          work_hours: workHours,
+          cost_per_hour: costPerHour,
           final_price: finalPrice,
+          profit: profit,
           next_revision_date: formData.get("next_revision_date") as string || null,
           recommendations: formData.get("recommendations") as string || null,
         })
@@ -233,30 +239,16 @@ export default function EditServiceDialog({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="cost_per_hour">Custo por Hora (€)</Label>
-                <Input
-                  id="cost_per_hour"
-                  name="cost_per_hour"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  defaultValue={service.cost_per_hour}
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="final_price">Preço Final (€)</Label>
-                <Input
-                  id="final_price"
-                  name="final_price"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  defaultValue={service.final_price}
-                  required
-                />
-              </div>
+            <div className="grid gap-2">
+              <Label htmlFor="cost_per_hour">Custo por Hora (€)</Label>
+              <Input
+                id="cost_per_hour"
+                name="cost_per_hour"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={service.cost_per_hour}
+              />
             </div>
 
             <div className="grid gap-2">
@@ -279,11 +271,14 @@ export default function EditServiceDialog({
             </div>
 
             <div className="bg-muted p-3 rounded-lg">
-              <p className="text-sm font-medium">
-                Lucro Calculado: <span className="text-green-600">{service.profit.toFixed(2)}€</span>
+              <p className="text-sm font-medium text-muted-foreground">
+                O preço final e o lucro serão calculados automaticamente ao guardar:
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                O lucro é calculado automaticamente: Preço Final - (Custo das Peças + Horas × Custo/Hora)
+                Preço Final = (Horas × Custo/Hora) + Custo das Peças
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Lucro = Preço Final - Custo das Peças
               </p>
             </div>
           </div>

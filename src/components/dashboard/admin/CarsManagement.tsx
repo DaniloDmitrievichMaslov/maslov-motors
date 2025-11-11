@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Car, Plus } from "lucide-react";
+import { Loader2, Car, Plus, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import AddCarDialog from "./AddCarDialog";
+import EditCarDialog from "./EditCarDialog";
 
 type CarWithOwner = {
   id: string;
@@ -25,6 +26,8 @@ export default function CarsManagement() {
   const [cars, setCars] = useState<CarWithOwner[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<CarWithOwner | null>(null);
 
   useEffect(() => {
     fetchCars();
@@ -74,6 +77,17 @@ export default function CarsManagement() {
     fetchCars();
   };
 
+  const handleCarUpdated = () => {
+    setShowEditDialog(false);
+    setSelectedCar(null);
+    fetchCars();
+  };
+
+  const handleEditCar = (car: CarWithOwner) => {
+    setSelectedCar(car);
+    setShowEditDialog(true);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -120,6 +134,13 @@ export default function CarsManagement() {
                       <p className="text-sm text-muted-foreground">{car.matricula}</p>
                     </div>
                   </div>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => handleEditCar(car)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -149,6 +170,15 @@ export default function CarsManagement() {
         onOpenChange={setShowAddDialog}
         onCarAdded={handleCarAdded}
       />
+
+      {selectedCar && (
+        <EditCarDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          car={selectedCar}
+          onCarUpdated={handleCarUpdated}
+        />
+      )}
     </div>
   );
 }
