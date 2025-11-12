@@ -71,9 +71,6 @@ export default function EditServiceDialog({
     const costPerHour = parseFloat(formData.get("cost_per_hour") as string) || 0;
     const partsCost = parseFloat(formData.get("parts_cost") as string) || 0;
     const finalPrice = parseFloat(formData.get("final_price") as string) || 0;
-    
-    // Calcular lucro: preço final - custo das peças
-    const profit = finalPrice - partsCost;
 
     try {
       const { error } = await supabase
@@ -88,7 +85,6 @@ export default function EditServiceDialog({
           work_hours: workHours,
           cost_per_hour: costPerHour,
           final_price: finalPrice,
-          profit: profit,
           next_revision_date: formData.get("next_revision_date") as string || null,
           recommendations: formData.get("recommendations") as string || null,
         })
