@@ -23,6 +23,7 @@ export default function Auth() {
     const password = formData.get("password") as string;
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
+    const phone = formData.get("phone") as string;
 
     try {
       const { error } = await supabase.auth.signUp({
@@ -32,6 +33,7 @@ export default function Auth() {
           data: {
             first_name: firstName,
             last_name: lastName,
+            phone: phone || null,
           },
           emailRedirectTo: `${window.location.origin}/`,
         },
@@ -170,6 +172,15 @@ export default function Auth() {
                     type="email"
                     placeholder="seu@email.com"
                     required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telemóvel (opcional)</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="+351 912 345 678"
                   />
                 </div>
                 <div className="space-y-2">
