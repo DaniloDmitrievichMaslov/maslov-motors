@@ -244,12 +244,14 @@ export default function ClientDashboard() {
         )}
       </main>
 
-      <AddCarDialog
-        open={showAddDialog}
-        onOpenChange={setShowAddDialog}
-        onCarAdded={handleCarAdded}
-        userId={user?.id || ""}
-      />
+      {user?.id && (
+        <AddCarDialog
+          open={showAddDialog}
+          onOpenChange={setShowAddDialog}
+          onCarAdded={handleCarAdded}
+          userId={user.id}
+        />
+      )}
     </div>
   );
 }
