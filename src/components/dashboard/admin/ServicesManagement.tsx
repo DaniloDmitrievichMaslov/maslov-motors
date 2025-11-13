@@ -168,11 +168,10 @@ export default function ServicesManagement() {
                     {new Date(service.scheduled_date).toLocaleDateString("pt-PT")}
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Preço:</span> {service.final_price.toFixed(2)}€
+                    <span className="text-muted-foreground">Preço final:</span> {service.final_price.toFixed(2)}€
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Custos:</span>{" "}
-                    {(service.parts_cost + service.work_hours * service.cost_per_hour).toFixed(2)}€
+                    <span className="text-muted-foreground">Custo das peças:</span> {service.parts_cost.toFixed(2)}€
                   </div>
                   <div className="font-semibold text-green-600">
                     <span className="text-muted-foreground font-normal">Lucro:</span> {service.profit.toFixed(2)}€

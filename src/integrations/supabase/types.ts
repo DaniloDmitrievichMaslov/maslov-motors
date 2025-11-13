@@ -89,7 +89,7 @@ export type Database = {
           cost_per_hour: number | null
           created_at: string
           description: string | null
-          final_price: number
+          final_price: number | null
           id: string
           next_revision_date: string | null
           parts_cost: number | null
@@ -107,7 +107,7 @@ export type Database = {
           cost_per_hour?: number | null
           created_at?: string
           description?: string | null
-          final_price?: number
+          final_price?: number | null
           id?: string
           next_revision_date?: string | null
           parts_cost?: number | null
@@ -125,7 +125,7 @@ export type Database = {
           cost_per_hour?: number | null
           created_at?: string
           description?: string | null
-          final_price?: number
+          final_price?: number | null
           id?: string
           next_revision_date?: string | null
           parts_cost?: number | null

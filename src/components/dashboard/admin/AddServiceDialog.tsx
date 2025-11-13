@@ -100,7 +100,6 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
     const workHours = parseFloat(formData.get("work_hours") as string) || 0;
     const costPerHour = parseFloat(formData.get("cost_per_hour") as string) || 0;
     const partsCost = parseFloat(formData.get("parts_cost") as string) || 0;
-    const finalPrice = parseFloat(formData.get("final_price") as string) || 0;
 
     try {
       const { error } = await supabase.from("services").insert({
@@ -113,7 +112,6 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
         parts_cost: partsCost,
         work_hours: workHours,
         cost_per_hour: costPerHour,
-        final_price: finalPrice,
         next_revision_date: formData.get("next_revision_date") as string || null,
         recommendations: formData.get("recommendations") as string || null,
       });

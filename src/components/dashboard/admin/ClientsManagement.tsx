@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Phone, User } from "lucide-react";
+import { Loader2, Mail, Phone, User, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import EditClientDialog from "./EditClientDialog";
 
 type Client = {
   id: string;
@@ -19,10 +31,48 @@ export default function ClientsManagement() {
   const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
     fetchClients();
   }, []);
+
+  const handleEditClient = (client: Client) => {
+    setSelectedClient(client);
+    setShowEditDialog(true);
+  };
+
+  const handleDeleteClick = (client: Client) => {
+    setSelectedClient(client);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedClient) return;
+
+    try {
+      // Delete the user's auth account (cascade will handle profiles and related data)
+      const { error } = await supabase.auth.admin.deleteUser(selectedClient.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Cliente apagado com sucesso!",
+      });
+
+      setShowDeleteDialog(false);
+      setSelectedClient(null);
+      fetchClients();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao apagar cliente",
+        description: error.message,
+      });
+    }
+  };
 
   const fetchClients = async () => {
     try {
@@ -130,10 +180,57 @@ export default function ClientsManagement() {
                 <div className="text-xs text-muted-foreground pt-2">
                   Cliente desde {new Date(client.created_at).toLocaleDateString("pt-PT")}
                 </div>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditClient(client)}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Editar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteClick(client)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Apagar
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
+      )}
+
+      {selectedClient && (
+        <>
+          <EditClientDialog
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+            client={selectedClient}
+            onClientUpdated={fetchClients}
+          />
+
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Tem a certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. Isto irá apagar permanentemente o cliente{" "}
+                  <strong>{selectedClient.first_name} {selectedClient.last_name}</strong> e todos os seus dados associados (carros e serviços).
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Apagar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       )}
     </div>
   );

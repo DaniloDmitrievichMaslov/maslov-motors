@@ -3,8 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Car, Plus, Pencil } from "lucide-react";
+import { Loader2, Car, Plus, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import AddCarDialog from "./AddCarDialog";
 import EditCarDialog from "./EditCarDialog";
 
@@ -27,6 +37,7 @@ export default function CarsManagement() {
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedCar, setSelectedCar] = useState<CarWithOwner | null>(null);
 
   useEffect(() => {
@@ -88,6 +99,38 @@ export default function CarsManagement() {
     setShowEditDialog(true);
   };
 
+  const handleDeleteClick = (car: CarWithOwner) => {
+    setSelectedCar(car);
+    setShowDeleteDialog(true);
+  };
+
+  const handleDelete = async () => {
+    if (!selectedCar) return;
+
+    try {
+      const { error } = await supabase
+        .from("cars")
+        .delete()
+        .eq("id", selectedCar.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Carro apagado com sucesso!",
+      });
+
+      setShowDeleteDialog(false);
+      setSelectedCar(null);
+      fetchCars();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao apagar carro",
+        description: error.message,
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -134,13 +177,6 @@ export default function CarsManagement() {
                       <p className="text-sm text-muted-foreground">{car.matricula}</p>
                     </div>
                   </div>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => handleEditCar(car)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -159,6 +195,24 @@ export default function CarsManagement() {
                 <div className="pt-2">
                   <Badge variant="secondary">{car.owner_name}</Badge>
                 </div>
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditCar(car)}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Editar
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleDeleteClick(car)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Apagar
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -172,12 +226,32 @@ export default function CarsManagement() {
       />
 
       {selectedCar && (
-        <EditCarDialog
-          open={showEditDialog}
-          onOpenChange={setShowEditDialog}
-          car={selectedCar}
-          onCarUpdated={handleCarUpdated}
-        />
+        <>
+          <EditCarDialog
+            open={showEditDialog}
+            onOpenChange={setShowEditDialog}
+            car={selectedCar}
+            onCarUpdated={handleCarUpdated}
+          />
+
+          <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Tem a certeza?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. Isto irá apagar permanentemente o carro{" "}
+                  <strong>{selectedCar.marca} {selectedCar.modelo}</strong> (matrícula: {selectedCar.matricula}) e todos os seus serviços associados.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Apagar
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
       )}
     </div>
   );
