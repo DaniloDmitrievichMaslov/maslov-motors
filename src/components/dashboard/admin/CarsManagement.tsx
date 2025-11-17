@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Car, Plus, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Car, Plus, Pencil, Trash2, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -34,7 +35,9 @@ type CarWithOwner = {
 export default function CarsManagement() {
   const { toast } = useToast();
   const [cars, setCars] = useState<CarWithOwner[]>([]);
+  const [filteredCars, setFilteredCars] = useState<CarWithOwner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -43,6 +46,20 @@ export default function CarsManagement() {
   useEffect(() => {
     fetchCars();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = cars.filter(car => 
+        car.marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        car.modelo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        car.matricula.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        car.owner_name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredCars(filtered);
+    } else {
+      setFilteredCars(cars);
+    }
+  }, [searchTerm, cars]);
 
   const fetchCars = async () => {
     try {
@@ -72,6 +89,7 @@ export default function CarsManagement() {
       );
 
       setCars(carsWithOwners);
+      setFilteredCars(carsWithOwners);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -141,11 +159,11 @@ export default function CarsManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Gestão de Carros</h2>
           <p className="text-muted-foreground">
-            Todos os carros registados dos clientes.
+            Lista de todos os carros registados na oficina.
           </p>
         </div>
         <Button onClick={() => setShowAddDialog(true)}>
@@ -154,15 +172,28 @@ export default function CarsManagement() {
         </Button>
       </div>
 
-      {cars.length === 0 ? (
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Pesquisar por marca, modelo, matrícula ou proprietário..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+
+      {filteredCars.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Nenhum carro registado</CardTitle>
+            <CardTitle>Nenhum carro encontrado</CardTitle>
+            <CardDescription>
+              {searchTerm ? "Não foram encontrados carros com esse critério de pesquisa." : "Ainda não existem carros registados no sistema."}
+            </CardDescription>
           </CardHeader>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {cars.map((car) => (
+          {filteredCars.map((car) => (
             <Card key={car.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Phone, User, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Mail, Phone, User, Pencil, Trash2, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -15,6 +15,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import EditClientDialog from "./EditClientDialog";
 
 type Client = {
@@ -25,6 +32,7 @@ type Client = {
   phone: string | null;
   created_at: string;
   car_count?: number;
+  cars?: any[];
 };
 
 export default function ClientsManagement() {
@@ -33,6 +41,7 @@ export default function ClientsManagement() {
   const [loading, setLoading] = useState(true);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showCarsDialog, setShowCarsDialog] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
@@ -42,6 +51,18 @@ export default function ClientsManagement() {
   const handleEditClient = (client: Client) => {
     setSelectedClient(client);
     setShowEditDialog(true);
+  };
+
+  const handleViewCars = async (client: Client) => {
+    // Fetch cars for this client
+    const { data: cars } = await supabase
+      .from("cars")
+      .select("*")
+      .eq("owner_id", client.id)
+      .order("created_at", { ascending: false });
+
+    setSelectedClient({ ...client, cars: cars || [] });
+    setShowCarsDialog(true);
   };
 
   const handleDeleteClick = (client: Client) => {
@@ -184,6 +205,14 @@ export default function ClientsManagement() {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => handleViewCars(client)}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Ver Carros
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleEditClient(client)}
                   >
                     <Pencil className="h-4 w-4 mr-2" />
@@ -212,6 +241,47 @@ export default function ClientsManagement() {
             client={selectedClient}
             onClientUpdated={fetchClients}
           />
+
+          <Dialog open={showCarsDialog} onOpenChange={setShowCarsDialog}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Carros de {selectedClient.first_name} {selectedClient.last_name}</DialogTitle>
+                <DialogDescription>
+                  {selectedClient.cars?.length || 0} carro(s) registado(s)
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 md:grid-cols-2 mt-4">
+                {selectedClient.cars && selectedClient.cars.length > 0 ? (
+                  selectedClient.cars.map((car) => (
+                    <Card key={car.id}>
+                      <CardHeader>
+                        <CardTitle className="text-lg">{car.marca} {car.modelo}</CardTitle>
+                        <CardDescription>{car.matricula}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Ano:</span>
+                          <span className="font-medium">{car.ano}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Cor:</span>
+                          <span className="font-medium">{car.cor}</span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Quilometragem:</span>
+                          <span className="font-medium">{car.quilometragem.toLocaleString()} km</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground col-span-2 text-center py-8">
+                    Este cliente ainda não tem carros registados.
+                  </p>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
             <AlertDialogContent>

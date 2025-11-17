@@ -2,17 +2,18 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Users, Car, Wrench, BarChart } from "lucide-react";
+import { LogOut, Users, Car, Wrench, BarChart, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ClientsManagement from "./admin/ClientsManagement";
 import CarsManagement from "./admin/CarsManagement";
 import ServicesManagement from "./admin/ServicesManagement";
 import ReportsView from "./admin/ReportsView";
+import DashboardCharts from "./admin/DashboardCharts";
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("clients");
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   const handleSignOut = async () => {
     await signOut();
@@ -36,7 +37,11 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </TabsTrigger>
             <TabsTrigger value="clients" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Clientes</span>
@@ -54,6 +59,10 @@ export default function AdminDashboard() {
               <span className="hidden sm:inline">Relatórios</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard">
+            <DashboardCharts />
+          </TabsContent>
 
           <TabsContent value="clients">
             <ClientsManagement />

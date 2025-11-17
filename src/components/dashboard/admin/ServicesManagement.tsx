@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Wrench } from "lucide-react";
+import { Loader2, Plus, Wrench, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import AddServiceDialog from "./AddServiceDialog";
 import EditServiceDialog from "./EditServiceDialog";
@@ -42,13 +44,36 @@ const statusColors = {
 export default function ServicesManagement() {
   const { toast } = useToast();
   const [services, setServices] = useState<ServiceWithDetails[]>([]);
+  const [filteredServices, setFilteredServices] = useState<ServiceWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingService, setEditingService] = useState<ServiceWithDetails | null>(null);
 
   useEffect(() => {
     fetchServices();
   }, []);
+
+  useEffect(() => {
+    let filtered = services;
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(service => 
+        service.service_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.car_info.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.owner_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(service => service.status === statusFilter);
+    }
+
+    setFilteredServices(filtered);
+  }, [searchTerm, statusFilter, services]);
 
   const fetchServices = async () => {
     try {
@@ -91,6 +116,7 @@ export default function ServicesManagement() {
       );
 
       setServices(servicesWithDetails);
+      setFilteredServices(servicesWithDetails);
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -122,28 +148,54 @@ export default function ServicesManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Gestão de Serviços</h2>
           <p className="text-muted-foreground">
-            Todos os serviços criados e o seu estado.
+            Lista de todos os serviços agendados e realizados.
           </p>
         </div>
         <Button onClick={() => setShowAddDialog(true)}>
           <Plus className="mr-2 h-4 w-4" />
-          Criar Serviço
+          Adicionar Serviço
         </Button>
       </div>
 
-      {services.length === 0 ? (
+      <div className="flex gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Pesquisar por serviço, carro ou cliente..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Filtrar por status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os status</SelectItem>
+            <SelectItem value="agendado">Agendado</SelectItem>
+            <SelectItem value="em_processo">Em Processo</SelectItem>
+            <SelectItem value="concluido">Concluído</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {filteredServices.length === 0 ? (
         <Card>
           <CardHeader>
-            <CardTitle>Nenhum serviço criado</CardTitle>
+            <CardTitle>Nenhum serviço encontrado</CardTitle>
+            <CardDescription>
+              {searchTerm || statusFilter !== "all" ? "Não foram encontrados serviços com esse critério." : "Ainda não existem serviços registados no sistema."}
+            </CardDescription>
           </CardHeader>
         </Card>
       ) : (
-        <div className="grid gap-4">
-          {services.map((service) => (
+        <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+          {filteredServices.map((service) => (
             <Card key={service.id} className="cursor-pointer hover:bg-accent/5" onClick={() => setEditingService(service)}>
               <CardHeader>
                 <div className="flex items-start justify-between">
