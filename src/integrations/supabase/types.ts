@@ -91,10 +91,10 @@ export type Database = {
           description: string | null
           final_price: number | null
           id: string
+          margin: number | null
           next_revision_date: string | null
           parts_cost: number | null
           parts_used: string | null
-          profit: number | null
           recommendations: string | null
           scheduled_date: string
           service_name: string
@@ -109,10 +109,10 @@ export type Database = {
           description?: string | null
           final_price?: number | null
           id?: string
+          margin?: number | null
           next_revision_date?: string | null
           parts_cost?: number | null
           parts_used?: string | null
-          profit?: number | null
           recommendations?: string | null
           scheduled_date: string
           service_name: string
@@ -127,10 +127,10 @@ export type Database = {
           description?: string | null
           final_price?: number | null
           id?: string
+          margin?: number | null
           next_revision_date?: string | null
           parts_cost?: number | null
           parts_used?: string | null
-          profit?: number | null
           recommendations?: string | null
           scheduled_date?: string
           service_name?: string

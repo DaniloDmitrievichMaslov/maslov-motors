@@ -19,7 +19,7 @@ type ServiceWithDetails = {
   work_hours: number;
   cost_per_hour: number;
   final_price: number;
-  profit: number;
+  margin: number;
   next_revision_date: string | null;
   recommendations: string | null;
   car_id: string;
@@ -83,6 +83,7 @@ export default function ServicesManagement() {
 
           return {
             ...service,
+            margin: service.margin || 0, // Ensure margin exists
             car_info: car ? `${car.marca} ${car.modelo} (${car.matricula})` : "Desconhecido",
             owner_name: ownerName,
           };
@@ -174,7 +175,7 @@ export default function ServicesManagement() {
                     <span className="text-muted-foreground">Custo das peças:</span> {service.parts_cost.toFixed(2)}€
                   </div>
                   <div className="font-semibold text-green-600">
-                    <span className="text-muted-foreground font-normal">Lucro:</span> {service.profit.toFixed(2)}€
+                    <span className="text-muted-foreground font-normal">Margem:</span> {service.margin.toFixed(2)}€
                   </div>
                 </div>
                 {service.description && (

@@ -236,10 +236,10 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
 
             <div className="bg-muted p-3 rounded-lg">
               <p className="text-sm font-medium text-muted-foreground">
-                O lucro será calculado automaticamente:
+                A margem será calculada automaticamente:
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Lucro = Preço Final - Custo das Peças
+                Margem = Preço Final - Custo das Peças
               </p>
             </div>
 
