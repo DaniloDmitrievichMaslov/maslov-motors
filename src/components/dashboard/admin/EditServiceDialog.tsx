@@ -37,7 +37,7 @@ type ServiceWithDetails = {
   work_hours: number;
   cost_per_hour: number;
   final_price: number;
-  profit: number;
+  margin: number;
   next_revision_date: string | null;
   recommendations: string | null;
   car_id: string;
@@ -278,10 +278,10 @@ export default function EditServiceDialog({
 
             <div className="bg-muted p-3 rounded-lg">
               <p className="text-sm font-medium text-muted-foreground">
-                O lucro será calculado automaticamente ao guardar:
+                A margem será calculada automaticamente ao guardar:
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Lucro = Preço Final - Custo das Peças
+                Margem = Preço Final - Custo das Peças
               </p>
             </div>
           </div>

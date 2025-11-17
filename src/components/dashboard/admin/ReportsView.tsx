@@ -8,7 +8,7 @@ type MonthlyStats = {
   total_services: number;
   total_revenue: number;
   total_costs: number;
-  total_profit: number;
+  total_margin: number;
 };
 
 export default function ReportsView() {
@@ -18,13 +18,13 @@ export default function ReportsView() {
     total_services: 0,
     total_revenue: 0,
     total_costs: 0,
-    total_profit: 0,
+    total_margin: 0,
   });
   const [yearStats, setYearStats] = useState<MonthlyStats>({
     total_services: 0,
     total_revenue: 0,
     total_costs: 0,
-    total_profit: 0,
+    total_margin: 0,
   });
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function ReportsView() {
       // Fetch current month services
       const { data: monthServices, error: monthError } = await supabase
         .from("services")
-        .select("final_price, parts_cost, work_hours, cost_per_hour, profit")
+        .select("final_price, parts_cost, work_hours, cost_per_hour, margin")
         .gte("created_at", currentMonthStart.toISOString());
 
       if (monthError) throw monthError;
@@ -48,7 +48,7 @@ export default function ReportsView() {
       // Fetch year services
       const { data: yearServices, error: yearError } = await supabase
         .from("services")
-        .select("final_price, parts_cost, work_hours, cost_per_hour, profit")
+        .select("final_price, parts_cost, work_hours, cost_per_hour, margin")
         .gte("created_at", yearStart.toISOString());
 
       if (yearError) throw yearError;
@@ -62,13 +62,13 @@ export default function ReportsView() {
             acc.total_costs +
             Number(service.parts_cost) +
             Number(service.work_hours) * Number(service.cost_per_hour),
-          total_profit: acc.total_profit + Number(service.profit),
+          total_margin: acc.total_margin + Number(service.margin),
         }),
         {
           total_services: 0,
           total_revenue: 0,
           total_costs: 0,
-          total_profit: 0,
+          total_margin: 0,
         }
       );
 
@@ -81,13 +81,13 @@ export default function ReportsView() {
             acc.total_costs +
             Number(service.parts_cost) +
             Number(service.work_hours) * Number(service.cost_per_hour),
-          total_profit: acc.total_profit + Number(service.profit),
+          total_margin: acc.total_margin + Number(service.margin),
         }),
         {
           total_services: 0,
           total_revenue: 0,
           total_costs: 0,
-          total_profit: 0,
+          total_margin: 0,
         }
       );
 
@@ -161,12 +161,12 @@ export default function ReportsView() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Lucro Total</CardTitle>
+                <CardTitle className="text-sm font-medium">Margem Total</CardTitle>
                 <TrendingUp className="h-4 w-4 text-green-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">
-                  {currentMonthStats.total_profit.toFixed(2)}€
+                  {currentMonthStats.total_margin.toFixed(2)}€
                 </div>
               </CardContent>
             </Card>
@@ -208,12 +208,12 @@ export default function ReportsView() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Lucro Total</CardTitle>
+                <CardTitle className="text-sm font-medium">Margem Total</CardTitle>
                 <TrendingUp className="h-4 w-4 text-green-600" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-600">
-                  {yearStats.total_profit.toFixed(2)}€
+                  {yearStats.total_margin.toFixed(2)}€
                 </div>
               </CardContent>
             </Card>
