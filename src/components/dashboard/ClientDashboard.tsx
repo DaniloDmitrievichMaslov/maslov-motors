@@ -4,10 +4,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import AddCarDialog from "./client/AddCarDialog";
+import QuoteRequestDialog from "./client/QuoteRequestDialog";
 
 type Car = {
   id: string;
@@ -60,7 +61,8 @@ export default function ClientDashboard() {
   const [cars, setCars] = useState<Car[]>([]);
   const [services, setServices] = useState<{ [carId: string]: Service[] }>({});
   const [loading, setLoading] = useState(true);
-  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addCarOpen, setAddCarOpen] = useState(false);
+  const [quoteRequestOpen, setQuoteRequestOpen] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
@@ -137,7 +139,7 @@ export default function ClientDashboard() {
   };
 
   const handleCarAdded = () => {
-    setShowAddDialog(false);
+    setAddCarOpen(false);
     fetchCarsAndServices();
   };
 
@@ -248,10 +250,21 @@ export default function ClientDashboard() {
               Gerencie os seus veículos e veja o histórico de serviços.
             </p>
           </div>
-          <Button onClick={() => setShowAddDialog(true)} size="lg" className="shadow-lg">
-            <Plus className="mr-2 h-5 w-5" />
-            Adicionar Carro
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setAddCarOpen(true)} size="lg" className="shadow-lg">
+              <Plus className="mr-2 h-5 w-5" />
+              Adicionar Carro
+            </Button>
+            <Button 
+              onClick={() => setQuoteRequestOpen(true)}
+              variant="outline"
+              size="lg"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground shadow-lg"
+            >
+              <MessageSquare className="mr-2 h-5 w-5" />
+              Pedir Orçamento
+            </Button>
+          </div>
         </div>
 
         {cars.length === 0 ? (
@@ -412,12 +425,22 @@ export default function ClientDashboard() {
       </main>
 
       {user && (
-        <AddCarDialog
-          open={showAddDialog}
-          onOpenChange={setShowAddDialog}
-          onCarAdded={handleCarAdded}
-          userId={user.id}
-        />
+        <>
+          <AddCarDialog
+            open={addCarOpen}
+            onOpenChange={setAddCarOpen}
+            onCarAdded={handleCarAdded}
+            userId={user.id}
+          />
+          
+          <QuoteRequestDialog
+            open={quoteRequestOpen}
+            onOpenChange={setQuoteRequestOpen}
+            userId={user.id}
+            userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || user.email || ''}
+            userPhone={profile?.phone || null}
+          />
+        </>
       )}
     </div>
   );

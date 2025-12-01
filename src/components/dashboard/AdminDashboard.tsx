@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Users, Car, Wrench, BarChart, LayoutDashboard } from "lucide-react";
+import { LogOut, Users, Car, Wrench, LayoutDashboard, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ClientsManagement from "./admin/ClientsManagement";
 import CarsManagement from "./admin/CarsManagement";
 import ServicesManagement from "./admin/ServicesManagement";
-import ReportsView from "./admin/ReportsView";
 import DashboardCharts from "./admin/DashboardCharts";
+import QuoteRequestsManagement from "./admin/QuoteRequestsManagement";
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
@@ -54,9 +54,9 @@ export default function AdminDashboard() {
               <Wrench className="h-4 w-4" />
               <span className="hidden sm:inline">Serviços</span>
             </TabsTrigger>
-            <TabsTrigger value="reports" className="flex items-center gap-2">
-              <BarChart className="h-4 w-4" />
-              <span className="hidden sm:inline">Relatórios</span>
+            <TabsTrigger value="quotes" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden sm:inline">Orçamentos</span>
             </TabsTrigger>
           </TabsList>
 
@@ -76,8 +76,8 @@ export default function AdminDashboard() {
             <ServicesManagement />
           </TabsContent>
 
-          <TabsContent value="reports">
-            <ReportsView />
+          <TabsContent value="quotes">
+            <QuoteRequestsManagement />
           </TabsContent>
         </Tabs>
       </main>
