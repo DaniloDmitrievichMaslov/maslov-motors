@@ -37,7 +37,13 @@ type Stats = {
   yearMargin: number;
 };
 
-const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+const COLORS = [
+  'hsl(210, 100%, 56%)',  // Azul vibrante
+  'hsl(142, 76%, 36%)',   // Verde esmeralda
+  'hsl(291, 64%, 42%)',   // Roxo
+  'hsl(24, 100%, 50%)',   // Laranja
+  'hsl(340, 82%, 52%)',   // Rosa/Vermelho
+];
 
 export default function DashboardCharts() {
   const { toast } = useToast();
@@ -419,20 +425,20 @@ export default function DashboardCharts() {
                 <Line 
                   type="monotone" 
                   dataKey="revenue" 
-                  stroke="hsl(var(--primary))" 
+                  stroke="hsl(142, 76%, 36%)" 
                   name="Receita" 
                   strokeWidth={3}
-                  dot={{ fill: 'hsl(var(--primary))', r: 4 }}
-                  activeDot={{ r: 6 }}
+                  dot={{ fill: 'hsl(142, 76%, 36%)', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 8, strokeWidth: 2, stroke: '#fff' }}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="margin" 
-                  stroke="hsl(var(--chart-2))" 
+                  stroke="hsl(210, 100%, 56%)" 
                   name="Margem" 
                   strokeWidth={3}
-                  dot={{ fill: 'hsl(var(--chart-2))', r: 4 }}
-                  activeDot={{ r: 6 }}
+                  dot={{ fill: 'hsl(210, 100%, 56%)', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 8, strokeWidth: 2, stroke: '#fff' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -507,14 +513,14 @@ export default function DashboardCharts() {
                 <Bar 
                   yAxisId="left" 
                   dataKey="services" 
-                  fill="hsl(var(--primary))" 
+                  fill="hsl(291, 64%, 42%)" 
                   name="Nº Serviços"
                   radius={[8, 8, 0, 0]}
                 />
                 <Bar 
                   yAxisId="right" 
                   dataKey="revenue" 
-                  fill="hsl(var(--chart-2))" 
+                  fill="hsl(24, 100%, 50%)" 
                   name="Receita (€)"
                   radius={[8, 8, 0, 0]}
                 />
