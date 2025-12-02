@@ -43,6 +43,7 @@ export default function ClientsManagement() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCarsDialog, setShowCarsDialog] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchClients();
@@ -150,6 +151,14 @@ export default function ClientsManagement() {
     );
   }
 
+  const filteredClients = clients.filter(
+    (client) =>
+      client.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (client.phone && client.phone.includes(searchTerm))
+  );
+
   return (
     <div className="space-y-6">
       <div>
@@ -159,18 +168,30 @@ export default function ClientsManagement() {
         </p>
       </div>
 
-      {clients.length === 0 ? (
+      <div className="flex gap-4">
+        <input
+          type="text"
+          placeholder="Pesquisar por nome, email ou telefone..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        />
+      </div>
+
+      {filteredClients.length === 0 ? (
         <Card>
           <CardHeader>
             <CardTitle>Nenhum cliente</CardTitle>
             <CardDescription>
-              Ainda não existem clientes registados no sistema.
+              {clients.length === 0 
+                ? "Ainda não existem clientes registados no sistema."
+                : "Nenhum cliente encontrado com esses critérios de pesquisa."}
             </CardDescription>
           </CardHeader>
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {clients.map((client) => (
+          {filteredClients.map((client) => (
             <Card key={client.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">

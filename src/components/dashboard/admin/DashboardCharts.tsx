@@ -123,7 +123,7 @@ export default function DashboardCharts() {
       const monthStats = monthServices.reduce(
         (acc, service) => {
           const revenue = Number(service.final_price || 0);
-          const costs = Number(service.parts_cost || 0) + (Number(service.work_hours || 0) * Number(service.cost_per_hour || 0));
+          const costs = Number(service.parts_cost || 0);
           return {
             revenue: acc.revenue + revenue,
             costs: acc.costs + costs,
@@ -136,7 +136,7 @@ export default function DashboardCharts() {
       const yearStats = yearServices.reduce(
         (acc, service) => {
           const revenue = Number(service.final_price || 0);
-          const costs = Number(service.parts_cost || 0) + (Number(service.work_hours || 0) * Number(service.cost_per_hour || 0));
+          const costs = Number(service.parts_cost || 0);
           return {
             revenue: acc.revenue + revenue,
             costs: acc.costs + costs,
@@ -175,7 +175,7 @@ export default function DashboardCharts() {
         });
 
         const revenue = monthServices.reduce((sum, s) => sum + Number(s.final_price || 0), 0);
-        const costs = monthServices.reduce((sum, s) => sum + Number(s.parts_cost || 0) + (Number(s.work_hours || 0) * Number(s.cost_per_hour || 0)), 0);
+        const costs = monthServices.reduce((sum, s) => sum + Number(s.parts_cost || 0), 0);
         const margin = revenue - costs;
 
         monthlyData.push({
