@@ -3,9 +3,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Phone, MessageSquare } from "lucide-react";
+import { Phone, MessageSquare, User } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 type QuoteRequestDialogProps = {
@@ -26,17 +27,58 @@ export default function QuoteRequestDialog({
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const workshopPhone = "+351 912 345 678"; // Número da oficina
+  const [editingPhone, setEditingPhone] = useState(false);
+  const [newPhone, setNewPhone] = useState(userPhone || "");
+  const workshopPhone = "+351 933 468 899"; // Número da oficina
+
+  const handleUpdatePhone = async () => {
+    if (!newPhone.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Telefone inválido",
+        description: "Por favor, insira um número de telefone válido.",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ phone: newPhone })
+        .eq("id", userId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Telefone atualizado",
+        description: "O seu número de telefone foi atualizado com sucesso.",
+      });
+
+      setEditingPhone(false);
+      // Refresh the page to update the phone number in the parent component
+      window.location.reload();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao atualizar telefone",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!userPhone) {
+    if (!userPhone && !newPhone) {
       toast({
         variant: "destructive",
         title: "Telefone não disponível",
-        description: "Por favor, atualize o seu perfil com um número de telefone.",
+        description: "Por favor, adicione um número de telefone primeiro.",
       });
+      setEditingPhone(true);
       return;
     }
 
@@ -47,7 +89,7 @@ export default function QuoteRequestDialog({
         {
           user_id: userId,
           client_name: userName,
-          client_phone: userPhone,
+          client_phone: userPhone || newPhone,
           message: message,
           status: "pendente",
         },
@@ -127,6 +169,56 @@ export default function QuoteRequestDialog({
                 <p className="text-sm text-muted-foreground mb-3">
                   Descreva o que precisa e nós ligamos-lhe
                 </p>
+
+                {!userPhone && !editingPhone && (
+                  <div className="mb-4 p-4 bg-muted/50 rounded-lg border border-border">
+                    <div className="flex items-center gap-2 mb-2">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <p className="text-sm font-medium">Telefone não disponível</p>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Para enviar um pedido de orçamento, precisa de adicionar um número de telefone.
+                    </p>
+                    <Button 
+                      onClick={() => setEditingPhone(true)} 
+                      variant="outline"
+                      size="sm"
+                    >
+                      Adicionar Telefone
+                    </Button>
+                  </div>
+                )}
+
+                {editingPhone && (
+                  <div className="mb-4 space-y-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Número de Telefone</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="Ex: 933 468 899"
+                        value={newPhone}
+                        onChange={(e) => setNewPhone(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={handleUpdatePhone}
+                        disabled={loading}
+                        size="sm"
+                      >
+                        {loading ? "A guardar..." : "Guardar Telefone"}
+                      </Button>
+                      <Button 
+                        onClick={() => setEditingPhone(false)}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
@@ -139,6 +231,7 @@ export default function QuoteRequestDialog({
                       required
                       rows={4}
                       className="resize-none"
+                      disabled={!userPhone && !editingPhone}
                     />
                   </div>
 
@@ -150,17 +243,11 @@ export default function QuoteRequestDialog({
                     >
                       Cancelar
                     </Button>
-                    <Button type="submit" disabled={loading || !userPhone}>
+                    <Button type="submit" disabled={loading || (!userPhone && !editingPhone)}>
                       {loading ? "A enviar..." : "Enviar Pedido"}
                     </Button>
                   </div>
                 </form>
-
-                {!userPhone && (
-                  <p className="text-sm text-destructive mt-2">
-                    * Adicione um número de telefone ao seu perfil primeiro
-                  </p>
-                )}
               </div>
             </div>
           </Card>

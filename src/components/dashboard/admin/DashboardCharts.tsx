@@ -121,20 +121,28 @@ export default function DashboardCharts() {
       const yearServices = (allServices || []).filter(s => new Date(s.created_at) >= yearStart);
 
       const monthStats = monthServices.reduce(
-        (acc, service) => ({
-          revenue: acc.revenue + Number(service.final_price || 0),
-          costs: acc.costs + Number(service.parts_cost || 0) + (Number(service.work_hours || 0) * Number(service.cost_per_hour || 0)),
-          margin: acc.margin + Number(service.margin || 0),
-        }),
+        (acc, service) => {
+          const revenue = Number(service.final_price || 0);
+          const costs = Number(service.parts_cost || 0) + (Number(service.work_hours || 0) * Number(service.cost_per_hour || 0));
+          return {
+            revenue: acc.revenue + revenue,
+            costs: acc.costs + costs,
+            margin: acc.margin + (revenue - costs),
+          };
+        },
         { revenue: 0, costs: 0, margin: 0 }
       );
 
       const yearStats = yearServices.reduce(
-        (acc, service) => ({
-          revenue: acc.revenue + Number(service.final_price || 0),
-          costs: acc.costs + Number(service.parts_cost || 0) + (Number(service.work_hours || 0) * Number(service.cost_per_hour || 0)),
-          margin: acc.margin + Number(service.margin || 0),
-        }),
+        (acc, service) => {
+          const revenue = Number(service.final_price || 0);
+          const costs = Number(service.parts_cost || 0) + (Number(service.work_hours || 0) * Number(service.cost_per_hour || 0));
+          return {
+            revenue: acc.revenue + revenue,
+            costs: acc.costs + costs,
+            margin: acc.margin + (revenue - costs),
+          };
+        },
         { revenue: 0, costs: 0, margin: 0 }
       );
 
@@ -167,7 +175,8 @@ export default function DashboardCharts() {
         });
 
         const revenue = monthServices.reduce((sum, s) => sum + Number(s.final_price || 0), 0);
-        const margin = monthServices.reduce((sum, s) => sum + Number(s.margin || 0), 0);
+        const costs = monthServices.reduce((sum, s) => sum + Number(s.parts_cost || 0) + (Number(s.work_hours || 0) * Number(s.cost_per_hour || 0)), 0);
+        const margin = revenue - costs;
 
         monthlyData.push({
           month: monthStart.toLocaleDateString('pt-PT', { month: 'short', year: '2-digit' }),
@@ -395,13 +404,36 @@ export default function DashboardCharts() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={monthlyRevenue}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted/20" />
+                <XAxis dataKey="month" stroke="hsl(var(--foreground))" />
+                <YAxis stroke="hsl(var(--foreground))" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                  formatter={(value: number) => `${value.toFixed(2)}€`}
+                />
                 <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" name="Receita" strokeWidth={2} />
-                <Line type="monotone" dataKey="margin" stroke="hsl(var(--chart-2))" name="Margem" strokeWidth={2} />
+                <Line 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="hsl(var(--primary))" 
+                  name="Receita" 
+                  strokeWidth={3}
+                  dot={{ fill: 'hsl(var(--primary))', r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="margin" 
+                  stroke="hsl(var(--chart-2))" 
+                  name="Margem" 
+                  strokeWidth={3}
+                  dot={{ fill: 'hsl(var(--chart-2))', r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -421,15 +453,28 @@ export default function DashboardCharts() {
                   cy="50%"
                   labelLine={false}
                   label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={80}
+                  outerRadius={100}
+                  innerRadius={60}
                   fill="#8884d8"
                   dataKey="value"
+                  paddingAngle={2}
                 >
                   {serviceTypes.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={COLORS[index % COLORS.length]}
+                      stroke="hsl(var(--background))"
+                      strokeWidth={2}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
@@ -443,14 +488,36 @@ export default function DashboardCharts() {
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={topClients}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted/20" />
+                <XAxis dataKey="name" stroke="hsl(var(--foreground))" />
                 <YAxis yAxisId="left" orientation="left" stroke="hsl(var(--primary))" />
                 <YAxis yAxisId="right" orientation="right" stroke="hsl(var(--chart-2))" />
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--background))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px'
+                  }}
+                  formatter={(value: number, name: string) => {
+                    if (name === "Receita (€)") return `${value.toFixed(2)}€`;
+                    return value;
+                  }}
+                />
                 <Legend />
-                <Bar yAxisId="left" dataKey="services" fill="hsl(var(--primary))" name="Nº Serviços" />
-                <Bar yAxisId="right" dataKey="revenue" fill="hsl(var(--chart-2))" name="Receita (€)" />
+                <Bar 
+                  yAxisId="left" 
+                  dataKey="services" 
+                  fill="hsl(var(--primary))" 
+                  name="Nº Serviços"
+                  radius={[8, 8, 0, 0]}
+                />
+                <Bar 
+                  yAxisId="right" 
+                  dataKey="revenue" 
+                  fill="hsl(var(--chart-2))" 
+                  name="Receita (€)"
+                  radius={[8, 8, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
