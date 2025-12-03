@@ -75,10 +75,26 @@ export default function ClientsManagement() {
     if (!selectedClient) return;
 
     try {
-      // Delete the user's auth account (cascade will handle profiles and related data)
-      const { error } = await supabase.auth.admin.deleteUser(selectedClient.id);
+      // Call the Edge Function to delete the user (requires admin auth)
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${sessionData.session?.access_token}`,
+          },
+          body: JSON.stringify({ userId: selectedClient.id }),
+        }
+      );
 
-      if (error) throw error;
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao apagar cliente');
+      }
 
       toast({
         title: "Cliente apagado com sucesso!",

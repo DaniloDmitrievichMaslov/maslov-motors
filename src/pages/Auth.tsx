@@ -4,36 +4,55 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { signUpSchema, signInSchema } from "@/lib/validations";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const firstName = formData.get("firstName") as string;
-    const lastName = formData.get("lastName") as string;
-    const phone = formData.get("phone") as string;
+    const data = {
+      email: (formData.get("email") as string)?.trim(),
+      password: formData.get("password") as string,
+      firstName: (formData.get("firstName") as string)?.trim(),
+      lastName: (formData.get("lastName") as string)?.trim(),
+      phone: (formData.get("phone") as string)?.trim() || "",
+    };
+
+    // Validate with zod
+    const result = signUpSchema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const { error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: data.email,
+        password: data.password,
         options: {
           data: {
-            first_name: firstName,
-            last_name: lastName,
-            phone: phone || null,
+            first_name: data.firstName,
+            last_name: data.lastName,
+            phone: data.phone || null,
           },
           emailRedirectTo: `${window.location.origin}/`,
         },
@@ -61,15 +80,32 @@ export default function Auth() {
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const data = {
+      email: (formData.get("email") as string)?.trim(),
+      password: formData.get("password") as string,
+    };
+
+    // Validate with zod
+    const result = signInSchema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: data.email,
+        password: data.password,
       });
 
       if (error) throw error;
@@ -114,8 +150,11 @@ export default function Auth() {
                     name="email"
                     type="email"
                     placeholder="seu@email.com"
-                    required
+                    className={errors.email ? "border-destructive" : ""}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signin-password">Password</Label>
@@ -124,8 +163,11 @@ export default function Auth() {
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    required
+                    className={errors.password ? "border-destructive" : ""}
                   />
+                  {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password}</p>
+                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
@@ -150,8 +192,12 @@ export default function Auth() {
                       name="firstName"
                       type="text"
                       placeholder="João"
-                      required
+                      maxLength={50}
+                      className={errors.firstName ? "border-destructive" : ""}
                     />
+                    {errors.firstName && (
+                      <p className="text-sm text-destructive">{errors.firstName}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">Apelido</Label>
@@ -160,8 +206,12 @@ export default function Auth() {
                       name="lastName"
                       type="text"
                       placeholder="Silva"
-                      required
+                      maxLength={50}
+                      className={errors.lastName ? "border-destructive" : ""}
                     />
+                    {errors.lastName && (
+                      <p className="text-sm text-destructive">{errors.lastName}</p>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -171,8 +221,12 @@ export default function Auth() {
                     name="email"
                     type="email"
                     placeholder="seu@email.com"
-                    required
+                    maxLength={255}
+                    className={errors.email ? "border-destructive" : ""}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Telemóvel (opcional)</Label>
@@ -181,7 +235,12 @@ export default function Auth() {
                     name="phone"
                     type="tel"
                     placeholder="+351 912 345 678"
+                    maxLength={20}
+                    className={errors.phone ? "border-destructive" : ""}
                   />
+                  {errors.phone && (
+                    <p className="text-sm text-destructive">{errors.phone}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
@@ -190,9 +249,12 @@ export default function Auth() {
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    required
-                    minLength={6}
+                    maxLength={72}
+                    className={errors.password ? "border-destructive" : ""}
                   />
+                  {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password}</p>
+                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
