@@ -14,7 +14,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Info } from "lucide-react";
+import { availableServices } from "@/lib/carData";
+import { Card } from "@/components/ui/card";
 
 type AddServiceDialogProps = {
   open: boolean;
@@ -42,6 +44,11 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
   const [cars, setCars] = useState<Car[]>([]);
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCar, setSelectedCar] = useState("");
+  const [selectedService, setSelectedService] = useState("");
+  const [customService, setCustomService] = useState("");
+
+  const selectedServiceData = availableServices.find(s => s.id === selectedService);
+  const isOtherService = selectedService === "outro";
 
   useEffect(() => {
     if (open) {
@@ -94,6 +101,18 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    const serviceName = isOtherService ? customService : selectedServiceData?.name;
+    
+    if (!serviceName) {
+      toast({
+        variant: "destructive",
+        title: "Selecione um serviço",
+        description: "Por favor, selecione ou descreva o tipo de serviço.",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -104,7 +123,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
     try {
       const { error } = await supabase.from("services").insert({
         car_id: selectedCar,
-        service_name: formData.get("service_name") as string,
+        service_name: serviceName,
         scheduled_date: formData.get("scheduled_date") as string,
         status: formData.get("status") as "agendado" | "em_processo" | "concluido",
         description: formData.get("description") as string || null,
@@ -121,6 +140,12 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
       toast({
         title: "Serviço criado com sucesso!",
       });
+
+      // Reset form
+      setSelectedService("");
+      setCustomService("");
+      setSelectedClient("");
+      setSelectedCar("");
 
       onServiceAdded();
     } catch (error: any) {
@@ -140,7 +165,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
         <DialogHeader>
           <DialogTitle>Criar Novo Serviço</DialogTitle>
           <DialogDescription>
-            Preencha os detalhes do serviço a realizar.
+            Preencha os detalhes do serviço a realizar. Escolha "Outro" se o serviço não estiver na lista.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -177,9 +202,43 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
               </Select>
             </div>
 
+            {/* Tipo de Serviço */}
             <div className="grid gap-2">
-              <Label htmlFor="service_name">Nome do Serviço</Label>
-              <Input id="service_name" name="service_name" placeholder="Ex: Mudança de óleo" required />
+              <Label htmlFor="service_type">Tipo de Serviço</Label>
+              <Select value={selectedService} onValueChange={setSelectedService}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o serviço" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[250px]">
+                  {availableServices.map((service) => (
+                    <SelectItem key={service.id} value={service.id}>
+                      {service.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Descrição do serviço selecionado */}
+              {selectedServiceData && !isOtherService && (
+                <Card className="p-3 bg-primary/5 border-primary/20">
+                  <div className="flex items-start gap-2">
+                    <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">{selectedServiceData.name}</p>
+                      <p className="text-xs text-muted-foreground">{selectedServiceData.description}</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {/* Campo para serviço personalizado */}
+              {isOtherService && (
+                <Input
+                  placeholder="Descreva o serviço"
+                  value={customService}
+                  onChange={(e) => setCustomService(e.target.value)}
+                />
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -203,8 +262,8 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="description">Descrição</Label>
-              <Textarea id="description" name="description" placeholder="Detalhes do serviço..." />
+              <Label htmlFor="description">Descrição Adicional</Label>
+              <Textarea id="description" name="description" placeholder="Detalhes adicionais do serviço..." />
             </div>
 
             <div className="grid gap-2">

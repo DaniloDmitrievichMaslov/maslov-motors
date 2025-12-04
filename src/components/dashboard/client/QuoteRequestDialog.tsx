@@ -6,8 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Phone, MessageSquare, User } from "lucide-react";
+import { Phone, MessageSquare, User, Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { availableServices } from "@/lib/carData";
 
 type QuoteRequestDialogProps = {
   open: boolean;
@@ -29,7 +31,12 @@ export default function QuoteRequestDialog({
   const [message, setMessage] = useState("");
   const [editingPhone, setEditingPhone] = useState(false);
   const [newPhone, setNewPhone] = useState(userPhone || "");
-  const workshopPhone = "+351 933 468 899"; // Número da oficina
+  const [selectedService, setSelectedService] = useState("");
+  const [customService, setCustomService] = useState("");
+  const workshopPhone = "+351 933 468 899";
+
+  const selectedServiceData = availableServices.find(s => s.id === selectedService);
+  const isOtherService = selectedService === "outro";
 
   const handleUpdatePhone = async () => {
     if (!newPhone.trim()) {
@@ -56,7 +63,6 @@ export default function QuoteRequestDialog({
       });
 
       setEditingPhone(false);
-      // Refresh the page to update the phone number in the parent component
       window.location.reload();
     } catch (error: any) {
       toast({
@@ -85,12 +91,18 @@ export default function QuoteRequestDialog({
     setLoading(true);
 
     try {
+      const serviceName = isOtherService ? customService : selectedServiceData?.name;
+      
+      const fullMessage = serviceName 
+        ? `Serviço pretendido: ${serviceName}\n\n${message}`
+        : message;
+
       const { error } = await supabase.from("quote_requests").insert([
         {
           user_id: userId,
           client_name: userName,
           client_phone: userPhone || newPhone,
-          message: message,
+          message: fullMessage,
           status: "pendente",
         },
       ]);
@@ -103,6 +115,8 @@ export default function QuoteRequestDialog({
       });
 
       setMessage("");
+      setSelectedService("");
+      setCustomService("");
       onOpenChange(false);
     } catch (error: any) {
       toast({
@@ -117,7 +131,7 @@ export default function QuoteRequestDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Pedir Orçamento</DialogTitle>
           <DialogDescription>
@@ -221,8 +235,42 @@ export default function QuoteRequestDialog({
                 )}
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Seleção de Serviço */}
                   <div className="space-y-2">
-                    <Label htmlFor="message">O que precisa?</Label>
+                    <Label htmlFor="service">Tipo de Serviço (Opcional)</Label>
+                    <Select value={selectedService} onValueChange={setSelectedService}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o serviço pretendido" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px]">
+                        {availableServices.map((service) => (
+                          <SelectItem key={service.id} value={service.id}>
+                            {service.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* Descrição do serviço selecionado */}
+                    {selectedServiceData && !isOtherService && (
+                      <div className="flex items-start gap-2 p-2 bg-primary/5 rounded-lg">
+                        <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                        <p className="text-xs text-muted-foreground">{selectedServiceData.description}</p>
+                      </div>
+                    )}
+
+                    {/* Campo para serviço personalizado */}
+                    {isOtherService && (
+                      <Input
+                        placeholder="Descreva o serviço pretendido"
+                        value={customService}
+                        onChange={(e) => setCustomService(e.target.value)}
+                      />
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Detalhes adicionais</Label>
                     <Textarea
                       id="message"
                       placeholder="Ex: Preciso de uma revisão completa ao meu carro..."

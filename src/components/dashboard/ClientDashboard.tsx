@@ -4,11 +4,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare } from "lucide-react";
+import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare, CalendarPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import AddCarDialog from "./client/AddCarDialog";
 import QuoteRequestDialog from "./client/QuoteRequestDialog";
+import BookingDialog from "./client/BookingDialog";
 
 type Car = {
   id: string;
@@ -63,6 +64,7 @@ export default function ClientDashboard() {
   const [loading, setLoading] = useState(true);
   const [addCarOpen, setAddCarOpen] = useState(false);
   const [quoteRequestOpen, setQuoteRequestOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
@@ -250,10 +252,19 @@ export default function ClientDashboard() {
               Gerencie os seus veículos e veja o histórico de serviços.
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button onClick={() => setAddCarOpen(true)} size="lg" className="shadow-lg">
               <Plus className="mr-2 h-5 w-5" />
               Adicionar Carro
+            </Button>
+            <Button 
+              onClick={() => setBookingOpen(true)}
+              size="lg"
+              variant="secondary"
+              className="shadow-lg"
+            >
+              <CalendarPlus className="mr-2 h-5 w-5" />
+              Fazer Marcação
             </Button>
             <Button 
               onClick={() => setQuoteRequestOpen(true)}
@@ -439,6 +450,15 @@ export default function ClientDashboard() {
             userId={user.id}
             userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || user.email || ''}
             userPhone={profile?.phone || null}
+          />
+
+          <BookingDialog
+            open={bookingOpen}
+            onOpenChange={setBookingOpen}
+            userId={user.id}
+            userName={`${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || user.email || ''}
+            userPhone={profile?.phone || null}
+            cars={cars}
           />
         </>
       )}
