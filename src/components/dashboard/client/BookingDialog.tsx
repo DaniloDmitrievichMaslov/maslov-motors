@@ -224,9 +224,7 @@ ${notes ? `Notas: ${notes}` : ''}
 
           {/* Data Preferida */}
           <div className="space-y-2">
-            <Label htmlFor="date" className="text-base font-medium">
-              Data Preferida <Badge variant="destructive" className="ml-2 text-xs">Obrigatório</Badge>
-            </Label>
+            <Label htmlFor="date" className="text-base font-medium">Data Preferida</Label>
             <Input
               id="date"
               type="date"
