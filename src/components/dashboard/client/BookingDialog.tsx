@@ -77,6 +77,15 @@ export default function BookingDialog({
       return;
     }
 
+    if (!preferredDate) {
+      toast({
+        variant: "destructive",
+        title: "Selecione uma data",
+        description: "Por favor, selecione a data preferida para a marcação.",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -216,7 +225,7 @@ ${notes ? `Notas: ${notes}` : ''}
           {/* Data Preferida */}
           <div className="space-y-2">
             <Label htmlFor="date" className="text-base font-medium">
-              Data Preferida <Badge variant="secondary" className="ml-2 text-xs">Opcional</Badge>
+              Data Preferida <Badge variant="destructive" className="ml-2 text-xs">Obrigatório</Badge>
             </Label>
             <Input
               id="date"
@@ -225,6 +234,7 @@ ${notes ? `Notas: ${notes}` : ''}
               onChange={(e) => setPreferredDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
               className="h-12"
+              required
             />
             <p className="text-xs text-muted-foreground">
               Iremos confirmar a disponibilidade e contactá-lo
