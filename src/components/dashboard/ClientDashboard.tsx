@@ -137,7 +137,7 @@ export default function ClientDashboard() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/auth");
+    navigate("/");
   };
 
   const handleCarAdded = () => {

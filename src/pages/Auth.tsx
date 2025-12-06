@@ -65,7 +65,7 @@ export default function Auth() {
         description: "Bem-vindo à Maslov Motors.",
       });
 
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -115,7 +115,7 @@ export default function Auth() {
         description: "Bem-vindo de volta.",
       });
 
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast({
         variant: "destructive",
