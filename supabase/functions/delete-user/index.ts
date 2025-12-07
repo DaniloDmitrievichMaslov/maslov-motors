@@ -58,9 +58,12 @@ Deno.serve(async (req) => {
     // Get the user ID to delete from the request body
     const { userId } = await req.json()
 
-    if (!userId) {
+    // Validate userId is present and is a valid UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!userId || typeof userId !== 'string' || !uuidRegex.test(userId)) {
+      console.log('Invalid userId format received:', userId)
       return new Response(
-        JSON.stringify({ error: 'Missing userId in request body' }),
+        JSON.stringify({ error: 'Invalid or missing userId format' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
