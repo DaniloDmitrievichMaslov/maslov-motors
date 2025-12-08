@@ -4,12 +4,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare, CalendarPlus } from "lucide-react";
+import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare, CalendarPlus, ChevronDown, ChevronUp, History } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import AddCarDialog from "./client/AddCarDialog";
 import QuoteRequestDialog from "./client/QuoteRequestDialog";
 import BookingDialog from "./client/BookingDialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type Car = {
   id: string;
@@ -66,6 +67,11 @@ export default function ClientDashboard() {
   const [quoteRequestOpen, setQuoteRequestOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [profile, setProfile] = useState<any>(null);
+  const [expandedCars, setExpandedCars] = useState<{ [carId: string]: boolean }>({});
+
+  const toggleCarExpanded = (carId: string) => {
+    setExpandedCars(prev => ({ ...prev, [carId]: !prev[carId] }));
+  };
 
   useEffect(() => {
     if (user) {
@@ -202,7 +208,7 @@ export default function ClientDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Agendados</p>
+                    <p className="text-sm text-muted-foreground mb-1">Serviços Agendados</p>
                     <p className="text-3xl font-bold text-info">{upcomingServices}</p>
                   </div>
                   <div className="p-3 bg-info/10 rounded-full">
@@ -216,7 +222,7 @@ export default function ClientDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">Concluídos</p>
+                    <p className="text-sm text-muted-foreground mb-1">Serviços Concluídos</p>
                     <p className="text-3xl font-bold text-success">{completedServices}</p>
                   </div>
                   <div className="p-3 bg-success/10 rounded-full">
@@ -288,149 +294,160 @@ export default function ClientDashboard() {
             </CardHeader>
           </Card>
         ) : (
-          <div className="space-y-6">
-            {cars.map((car, index) => (
-              <Card 
-                key={car.id} 
-                className="shadow-xl hover:shadow-2xl transition-all duration-300 border-border/50 overflow-hidden group animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary-glow"></div>
-                
-                <CardHeader className="bg-gradient-card">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-4 bg-primary/10 rounded-2xl shadow-lg group-hover:shadow-glow transition-all duration-300 group-hover:scale-110">
-                        <Car className="h-8 w-8 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-2xl mb-1">
-                          {car.marca} {car.modelo}
-                        </CardTitle>
-                        <CardDescription className="text-base flex items-center gap-2 flex-wrap">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cars.map((car, index) => {
+              const carServices = services[car.id] || [];
+              const isExpanded = expandedCars[car.id];
+              
+              return (
+                <Collapsible
+                  key={car.id}
+                  open={isExpanded}
+                  onOpenChange={() => toggleCarExpanded(car.id)}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <Card className="shadow-xl hover:shadow-2xl transition-all duration-300 border-border/50 overflow-hidden group h-full">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary-glow"></div>
+                    
+                    <CardHeader className="bg-gradient-card pb-4">
+                      <div className="flex items-center gap-4">
+                        <div className="p-4 bg-primary/10 rounded-2xl shadow-lg group-hover:shadow-glow transition-all duration-300 group-hover:scale-105">
+                          <Car className="h-8 w-8 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-xl mb-1 truncate">
+                            {car.marca} {car.modelo}
+                          </CardTitle>
                           <Badge variant="outline" className="font-mono">{car.matricula}</Badge>
-                          <span>•</span>
-                          <span>{car.ano}</span>
-                          <span>•</span>
-                          <Badge variant="secondary">{car.cor}</Badge>
-                        </CardDescription>
+                        </div>
                       </div>
-                    </div>
-                    <Badge variant="outline" className="text-base px-4 py-2 shadow-md">
-                      <TrendingUp className="h-4 w-4 mr-2" />
-                      {car.quilometragem.toLocaleString()} km
-                    </Badge>
-                  </div>
-                </CardHeader>
+                    </CardHeader>
 
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-6">
-                    <Wrench className="h-5 w-5 text-primary" />
-                    <h3 className="font-semibold text-lg">Histórico de Serviços</h3>
-                  </div>
-                  
-                  {!services[car.id] || services[car.id].length === 0 ? (
-                    <div className="text-center py-8 px-4 bg-muted/30 rounded-lg border border-dashed border-border">
-                      <Wrench className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                      <p className="text-muted-foreground">
-                        Ainda não há serviços registados para este carro.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="relative">
-                      {/* Timeline Line */}
-                      <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-primary-glow"></div>
-                      
-                      <div className="space-y-6">
-                        {services[car.id].map((service, idx) => {
-                          const StatusIcon = statusConfig[service.status].icon;
-                          return (
-                            <div
-                              key={service.id}
-                              className="relative pl-16 animate-slide-in"
-                              style={{ animationDelay: `${idx * 0.1}s` }}
-                            >
-                              {/* Timeline Node */}
-                              <div className="absolute left-3 top-3 w-6 h-6 rounded-full bg-background border-4 border-primary shadow-lg flex items-center justify-center">
-                                <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                              </div>
+                    <CardContent className="pt-4 space-y-4">
+                      <div className="grid grid-cols-3 gap-3 text-center">
+                        <div className="p-3 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground mb-1">Ano</p>
+                          <p className="font-semibold">{car.ano}</p>
+                        </div>
+                        <div className="p-3 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground mb-1">Cor</p>
+                          <p className="font-semibold text-sm">{car.cor}</p>
+                        </div>
+                        <div className="p-3 bg-muted/30 rounded-lg">
+                          <p className="text-xs text-muted-foreground mb-1">Km</p>
+                          <p className="font-semibold text-sm">{car.quilometragem.toLocaleString()}</p>
+                        </div>
+                      </div>
 
-                              <Card className="border-l-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                                    style={{ borderLeftColor: `hsl(var(--${service.status === 'concluido' ? 'success' : service.status === 'em_processo' ? 'warning' : 'info'}))` }}>
-                                <CardContent className="p-6">
-                                  <div className="flex items-start justify-between mb-4">
-                                    <div className="flex items-center gap-3">
-                                      <div className={`p-2 rounded-lg ${statusConfig[service.status].color.split(' ')[0]}/10`}>
-                                        <StatusIcon className={`h-5 w-5 ${statusConfig[service.status].color.split(' ')[0].replace('bg-', 'text-')}`} />
-                                      </div>
-                                      <div>
-                                        <h4 className="font-semibold text-lg">{service.service_name}</h4>
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                                          <Calendar className="h-4 w-4" />
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Total de serviços:</span>
+                        <Badge variant="secondary">{carServices.length}</Badge>
+                      </div>
+
+                      <CollapsibleTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          className="w-full border-primary/30 hover:bg-primary/10 hover:border-primary"
+                        >
+                          <History className="h-4 w-4 mr-2" />
+                          {isExpanded ? "Ocultar Histórico" : "Ver Histórico"}
+                          {isExpanded ? (
+                            <ChevronUp className="h-4 w-4 ml-2" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4 ml-2" />
+                          )}
+                        </Button>
+                      </CollapsibleTrigger>
+
+                      <CollapsibleContent className="space-y-4 pt-2">
+                        {carServices.length === 0 ? (
+                          <div className="text-center py-6 px-4 bg-muted/30 rounded-lg border border-dashed border-border">
+                            <Wrench className="h-10 w-10 text-muted-foreground mx-auto mb-2 opacity-50" />
+                            <p className="text-sm text-muted-foreground">
+                              Ainda não há serviços registados.
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="relative">
+                            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-accent to-primary-glow"></div>
+                            
+                            <div className="space-y-4">
+                              {carServices.map((service, idx) => {
+                                const StatusIcon = statusConfig[service.status].icon;
+                                return (
+                                  <div
+                                    key={service.id}
+                                    className="relative pl-10 animate-scale-in"
+                                    style={{ animationDelay: `${idx * 0.05}s` }}
+                                  >
+                                    <div className="absolute left-2 top-3 w-4 h-4 rounded-full bg-background border-2 border-primary shadow-md flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                                    </div>
+
+                                    <Card className="border-l-2 shadow-md hover:shadow-lg transition-all duration-300"
+                                          style={{ borderLeftColor: `hsl(var(--${service.status === 'concluido' ? 'success' : service.status === 'em_processo' ? 'warning' : 'info'}))` }}>
+                                      <CardContent className="p-4">
+                                        <div className="flex items-start justify-between gap-2 mb-2">
+                                          <div className="flex items-center gap-2 min-w-0">
+                                            <StatusIcon className={`h-4 w-4 flex-shrink-0 ${service.status === 'concluido' ? 'text-success' : service.status === 'em_processo' ? 'text-warning' : 'text-info'}`} />
+                                            <h4 className="font-semibold text-sm truncate">{service.service_name}</h4>
+                                          </div>
+                                          <Badge className={`${statusConfig[service.status].color} text-xs flex-shrink-0`}>
+                                            {statusLabels[service.status]}
+                                          </Badge>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                                          <Calendar className="h-3 w-3" />
                                           {new Date(service.scheduled_date).toLocaleDateString("pt-PT", {
                                             day: "2-digit",
-                                            month: "long",
+                                            month: "short",
                                             year: "numeric"
                                           })}
                                         </div>
-                                      </div>
-                                    </div>
-                                    <Badge className={`${statusConfig[service.status].color} shadow-md`}>
-                                      {statusLabels[service.status]}
-                                    </Badge>
+
+                                        {service.description && (
+                                          <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{service.description}</p>
+                                        )}
+
+                                        <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                                          <span className="text-xs text-muted-foreground">Valor:</span>
+                                          <span className="font-bold text-sm">€{service.final_price?.toFixed(2) || "0.00"}</span>
+                                        </div>
+
+                                        {service.next_revision_date && (
+                                          <div className="mt-2 text-xs">
+                                            <span className="text-muted-foreground">Próxima Revisão: </span>
+                                            <span className="font-medium text-accent">
+                                              {new Date(service.next_revision_date).toLocaleDateString("pt-PT")}
+                                            </span>
+                                          </div>
+                                        )}
+
+                                        {service.recommendations && (
+                                          <div className="mt-2 p-2 bg-accent/10 border border-accent/20 rounded text-xs">
+                                            <p className="font-medium text-accent-foreground flex items-center gap-1 mb-1">
+                                              <AlertCircle className="h-3 w-3" />
+                                              Recomendações
+                                            </p>
+                                            <p className="text-muted-foreground line-clamp-2">{service.recommendations}</p>
+                                          </div>
+                                        )}
+                                      </CardContent>
+                                    </Card>
                                   </div>
-
-                                  {service.description && (
-                                    <div className="mb-3 p-3 bg-muted/30 rounded-lg">
-                                      <p className="text-sm">{service.description}</p>
-                                    </div>
-                                  )}
-
-                                  {service.parts_used && (
-                                    <div className="mb-3">
-                                      <p className="text-sm font-medium mb-2 text-muted-foreground">Peças Utilizadas:</p>
-                                      <div className="flex flex-wrap gap-2">
-                                        {service.parts_used.split(',').map((part, i) => (
-                                          <Badge key={i} variant="outline">{part.trim()}</Badge>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  <div className="flex items-center justify-between pt-3 border-t border-border/50">
-                                    <div className="text-sm text-muted-foreground">
-                                      Valor: <span className="font-bold text-lg text-foreground">€{service.final_price?.toFixed(2) || "0.00"}</span>
-                                    </div>
-                                    {service.next_revision_date && (
-                                      <div className="text-sm">
-                                        <span className="text-muted-foreground">Próxima Revisão: </span>
-                                        <span className="font-medium text-accent">
-                                          {new Date(service.next_revision_date).toLocaleDateString("pt-PT")}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {service.recommendations && (
-                                    <div className="mt-4 p-3 bg-accent/10 border border-accent/20 rounded-lg">
-                                      <p className="text-sm font-medium mb-1 text-accent-foreground flex items-center gap-2">
-                                        <AlertCircle className="h-4 w-4" />
-                                        Recomendações:
-                                      </p>
-                                      <p className="text-sm text-muted-foreground">{service.recommendations}</p>
-                                    </div>
-                                  )}
-                                </CardContent>
-                              </Card>
+                                );
+                              })}
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+                          </div>
+                        )}
+                      </CollapsibleContent>
+                    </CardContent>
+                  </Card>
+                </Collapsible>
+              );
+            })}
           </div>
         )}
       </main>
