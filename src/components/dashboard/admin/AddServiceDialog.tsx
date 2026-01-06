@@ -35,6 +35,7 @@ type Car = {
   marca: string;
   modelo: string;
   matricula: string;
+  quilometragem: number;
 };
 
 export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }: AddServiceDialogProps) {
@@ -85,7 +86,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
   const fetchClientCars = async (clientId: string) => {
     const { data, error } = await supabase
       .from("cars")
-      .select("id, marca, modelo, matricula")
+      .select("id, marca, modelo, matricula, quilometragem")
       .eq("owner_id", clientId);
 
     if (error) {
@@ -120,6 +121,8 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
     const costPerHour = parseFloat(formData.get("cost_per_hour") as string) || 0;
     const partsCost = parseFloat(formData.get("parts_cost") as string) || 0;
 
+    const mileageAtService = parseInt(formData.get("mileage_at_service") as string) || null;
+
     try {
       const { error } = await supabase.from("services").insert({
         car_id: selectedCar,
@@ -133,6 +136,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
         cost_per_hour: costPerHour,
         next_revision_date: formData.get("next_revision_date") as string || null,
         recommendations: formData.get("recommendations") as string || null,
+        mileage_at_service: mileageAtService,
       });
 
       if (error) throw error;
@@ -259,6 +263,18 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="mileage_at_service">Quilometragem Atual (km)</Label>
+              <Input 
+                id="mileage_at_service" 
+                name="mileage_at_service" 
+                type="number" 
+                min="0"
+                defaultValue={cars.find(c => c.id === selectedCar)?.quilometragem || ""}
+                placeholder="Km do veículo no momento do serviço"
+              />
             </div>
 
             <div className="grid gap-2">

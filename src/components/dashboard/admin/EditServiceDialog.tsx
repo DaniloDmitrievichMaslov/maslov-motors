@@ -43,6 +43,7 @@ type ServiceWithDetails = {
   car_id: string;
   car_info?: string;
   owner_name?: string;
+  mileage_at_service: number | null;
 };
 
 type EditServiceDialogProps = {
@@ -71,6 +72,8 @@ export default function EditServiceDialog({
     const costPerHour = parseFloat(formData.get("cost_per_hour") as string) || 0;
     const partsCost = parseFloat(formData.get("parts_cost") as string) || 0;
 
+    const mileageAtService = parseInt(formData.get("mileage_at_service") as string) || null;
+
     try {
       const { error } = await supabase
         .from("services")
@@ -85,6 +88,7 @@ export default function EditServiceDialog({
           cost_per_hour: costPerHour,
           next_revision_date: formData.get("next_revision_date") as string || null,
           recommendations: formData.get("recommendations") as string || null,
+          mileage_at_service: mileageAtService,
         })
         .eq("id", service.id);
 
@@ -186,6 +190,18 @@ export default function EditServiceDialog({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="mileage_at_service">Quilometragem no Serviço (km)</Label>
+              <Input
+                id="mileage_at_service"
+                name="mileage_at_service"
+                type="number"
+                min="0"
+                defaultValue={service.mileage_at_service || ""}
+                placeholder="Km do veículo no momento do serviço"
+              />
             </div>
 
             <div className="grid gap-2">

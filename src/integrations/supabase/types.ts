@@ -125,6 +125,7 @@ export type Database = {
           final_price: number | null
           id: string
           margin: number | null
+          mileage_at_service: number | null
           next_revision_date: string | null
           parts_cost: number | null
           parts_used: string | null
@@ -143,6 +144,7 @@ export type Database = {
           final_price?: number | null
           id?: string
           margin?: number | null
+          mileage_at_service?: number | null
           next_revision_date?: string | null
           parts_cost?: number | null
           parts_used?: string | null
@@ -161,6 +163,7 @@ export type Database = {
           final_price?: number | null
           id?: string
           margin?: number | null
+          mileage_at_service?: number | null
           next_revision_date?: string | null
           parts_cost?: number | null
           parts_used?: string | null
