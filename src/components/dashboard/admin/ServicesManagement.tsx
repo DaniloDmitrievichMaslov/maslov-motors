@@ -27,6 +27,7 @@ type ServiceWithDetails = {
   car_id: string;
   car_info?: string;
   owner_name?: string;
+  mileage_at_service: number | null;
 };
 
 const statusLabels = {

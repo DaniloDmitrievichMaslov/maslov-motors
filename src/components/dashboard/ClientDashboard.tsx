@@ -33,6 +33,7 @@ type Service = {
   next_revision_date: string | null;
   recommendations: string | null;
   created_at: string;
+  mileage_at_service: number | null;
 };
 
 const statusLabels = {
@@ -398,13 +399,20 @@ export default function ClientDashboard() {
                                           </Badge>
                                         </div>
 
-                                        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                                          <Calendar className="h-3 w-3" />
-                                          {new Date(service.scheduled_date).toLocaleDateString("pt-PT", {
-                                            day: "2-digit",
-                                            month: "short",
-                                            year: "numeric"
-                                          })}
+                                        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+                                          <div className="flex items-center gap-1">
+                                            <Calendar className="h-3 w-3" />
+                                            {new Date(service.scheduled_date).toLocaleDateString("pt-PT", {
+                                              day: "2-digit",
+                                              month: "short",
+                                              year: "numeric"
+                                            })}
+                                          </div>
+                                          {service.mileage_at_service && (
+                                            <div className="flex items-center gap-1 bg-muted/50 px-2 py-0.5 rounded">
+                                              <span className="font-medium">{service.mileage_at_service.toLocaleString()} km</span>
+                                            </div>
+                                          )}
                                         </div>
 
                                         {service.description && (
