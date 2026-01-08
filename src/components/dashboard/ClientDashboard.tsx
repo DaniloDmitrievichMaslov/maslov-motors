@@ -4,12 +4,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare, CalendarPlus, ChevronDown, ChevronUp, History } from "lucide-react";
+import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare, CalendarPlus, ChevronDown, ChevronUp, History, CalendarCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import AddCarDialog from "./client/AddCarDialog";
 import QuoteRequestDialog from "./client/QuoteRequestDialog";
 import BookingDialog from "./client/BookingDialog";
+import MyBookingsDialog from "./client/MyBookingsDialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type Car = {
@@ -67,6 +68,7 @@ export default function ClientDashboard() {
   const [addCarOpen, setAddCarOpen] = useState(false);
   const [quoteRequestOpen, setQuoteRequestOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [myBookingsOpen, setMyBookingsOpen] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [expandedCars, setExpandedCars] = useState<{ [carId: string]: boolean }>({});
 
