@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      availability_slots: {
+        Row: {
+          created_at: string
+          current_bookings: number
+          date: string
+          end_time: string
+          id: string
+          is_available: boolean
+          max_bookings: number
+          start_time: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_bookings?: number
+          date: string
+          end_time: string
+          id?: string
+          is_available?: boolean
+          max_bookings?: number
+          start_time: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_bookings?: number
+          date?: string
+          end_time?: string
+          id?: string
+          is_available?: boolean
+          max_bookings?: number
+          start_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cars: {
         Row: {
           ano: number
@@ -90,6 +126,9 @@ export type Database = {
           created_at: string
           id: string
           message: string
+          preferred_date: string | null
+          preferred_time: string | null
+          slot_id: string | null
           status: string
           updated_at: string
           user_id: string
@@ -100,6 +139,9 @@ export type Database = {
           created_at?: string
           id?: string
           message: string
+          preferred_date?: string | null
+          preferred_time?: string | null
+          slot_id?: string | null
           status?: string
           updated_at?: string
           user_id: string
@@ -110,11 +152,22 @@ export type Database = {
           created_at?: string
           id?: string
           message?: string
+          preferred_date?: string | null
+          preferred_time?: string | null
+          slot_id?: string | null
           status?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "quote_requests_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "availability_slots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
