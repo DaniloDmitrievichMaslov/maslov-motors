@@ -2,14 +2,13 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Users, Car, Wrench, LayoutDashboard, MessageSquare, CalendarClock } from "lucide-react";
+import { LogOut, Users, Car, Wrench, LayoutDashboard, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ClientsManagement from "./admin/ClientsManagement";
 import CarsManagement from "./admin/CarsManagement";
 import ServicesManagement from "./admin/ServicesManagement";
 import DashboardCharts from "./admin/DashboardCharts";
 import QuoteRequestsManagement from "./admin/QuoteRequestsManagement";
-import AvailabilityManagement from "./admin/AvailabilityManagement";
 
 export default function AdminDashboard() {
   const { signOut } = useAuth();
@@ -38,14 +37,10 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
-            </TabsTrigger>
-            <TabsTrigger value="availability" className="flex items-center gap-2">
-              <CalendarClock className="h-4 w-4" />
-              <span className="hidden sm:inline">Agenda</span>
             </TabsTrigger>
             <TabsTrigger value="clients" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -67,10 +62,6 @@ export default function AdminDashboard() {
 
           <TabsContent value="dashboard">
             <DashboardCharts />
-          </TabsContent>
-
-          <TabsContent value="availability">
-            <AvailabilityManagement />
           </TabsContent>
 
           <TabsContent value="clients">
