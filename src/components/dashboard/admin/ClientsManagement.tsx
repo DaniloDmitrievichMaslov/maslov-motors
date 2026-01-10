@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Phone, User, Pencil, Trash2, Eye } from "lucide-react";
+import { Loader2, Mail, Phone, User, Pencil, Trash2, Eye, UserPlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import EditClientDialog from "./EditClientDialog";
+import AddClientDialog from "./AddClientDialog";
 
 type Client = {
   id: string;
@@ -39,6 +40,7 @@ export default function ClientsManagement() {
   const { toast } = useToast();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCarsDialog, setShowCarsDialog] = useState(false);
@@ -177,11 +179,17 @@ export default function ClientsManagement() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Gestão de Clientes</h2>
-        <p className="text-muted-foreground">
-          Lista de todos os clientes registados na oficina.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Gestão de Clientes</h2>
+          <p className="text-muted-foreground">
+            Lista de todos os clientes registados na oficina.
+          </p>
+        </div>
+        <Button onClick={() => setShowAddDialog(true)}>
+          <UserPlus className="mr-2 h-4 w-4" />
+          Adicionar Cliente
+        </Button>
       </div>
 
       <div className="flex gap-4">
@@ -193,6 +201,12 @@ export default function ClientsManagement() {
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         />
       </div>
+
+      <AddClientDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onClientAdded={fetchClients}
+      />
 
       {filteredClients.length === 0 ? (
         <Card>

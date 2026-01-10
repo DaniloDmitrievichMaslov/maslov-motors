@@ -135,8 +135,9 @@ export default function QuoteRequestsManagement() {
   // Separar marcações de orçamentos baseado no conteúdo da mensagem
   const isBooking = (request: QuoteRequest) => request.message.includes("🚗 Marcação de Serviço");
   
-  const bookings = requests.filter(isBooking);
-  const quoteRequests = requests.filter(r => !isBooking(r));
+  // Filtrar apenas os não concluídos por defeito
+  const activeBookings = requests.filter(r => isBooking(r) && r.status !== "concluido");
+  const activeQuoteRequests = requests.filter(r => !isBooking(r) && r.status !== "concluido");
 
   const getFilteredRequests = (list: QuoteRequest[]) => {
     return list.filter(
@@ -144,8 +145,8 @@ export default function QuoteRequestsManagement() {
     );
   };
 
-  const filteredBookings = getFilteredRequests(bookings);
-  const filteredQuotes = getFilteredRequests(quoteRequests);
+  const filteredBookings = getFilteredRequests(activeBookings);
+  const filteredQuotes = getFilteredRequests(activeQuoteRequests);
 
   if (loading) {
     return (
@@ -283,10 +284,9 @@ export default function QuoteRequestsManagement() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">Todos (Ativos)</SelectItem>
             <SelectItem value="pendente">Pendentes</SelectItem>
             <SelectItem value="contactado">Contactados</SelectItem>
-            <SelectItem value="concluido">Concluídos</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -297,18 +297,18 @@ export default function QuoteRequestsManagement() {
           <TabsTrigger value="marcacoes" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <span>Marcações</span>
-            {bookings.length > 0 && (
+            {activeBookings.length > 0 && (
               <Badge variant="secondary" className="ml-1 hidden sm:inline-flex">
-                {bookings.length}
+                {activeBookings.length}
               </Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="orcamentos" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             <span>Orçamentos</span>
-            {quoteRequests.length > 0 && (
+            {activeQuoteRequests.length > 0 && (
               <Badge variant="secondary" className="ml-1 hidden sm:inline-flex">
-                {quoteRequests.length}
+                {activeQuoteRequests.length}
               </Badge>
             )}
           </TabsTrigger>
