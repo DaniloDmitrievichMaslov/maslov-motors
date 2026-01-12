@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Car, Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Loader2, Car, Plus, Pencil, Trash2, Search, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import AddCarDialog from "./AddCarDialog";
 import EditCarDialog from "./EditCarDialog";
+import ManageCarBrandsDialog from "./ManageCarBrandsDialog";
 
 type CarWithOwner = {
   id: string;
@@ -41,6 +42,7 @@ export default function CarsManagement() {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showManageBrandsDialog, setShowManageBrandsDialog] = useState(false);
   const [selectedCar, setSelectedCar] = useState<CarWithOwner | null>(null);
 
   useEffect(() => {
@@ -166,10 +168,16 @@ export default function CarsManagement() {
             Lista de todos os carros registados na oficina.
           </p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Carro
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowManageBrandsDialog(true)}>
+            <Settings className="mr-2 h-4 w-4" />
+            Gerir Marcas
+          </Button>
+          <Button onClick={() => setShowAddDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Carro
+          </Button>
+        </div>
       </div>
 
       <div className="relative">
@@ -284,6 +292,11 @@ export default function CarsManagement() {
           </AlertDialog>
         </>
       )}
+
+      <ManageCarBrandsDialog
+        open={showManageBrandsDialog}
+        onOpenChange={setShowManageBrandsDialog}
+      />
     </div>
   );
 }

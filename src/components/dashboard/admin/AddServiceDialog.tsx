@@ -298,23 +298,27 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="parts_cost">Custo das Peças (€)</Label>
+                <Input id="parts_cost" name="parts_cost" type="number" step="0.01" min="0" defaultValue="0" />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="work_hours">Horas de Trabalho</Label>
+                <Input id="work_hours" name="work_hours" type="number" step="0.5" min="0" defaultValue="0" />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="cost_per_hour">Custo por Hora (€)</Label>
                 <Input id="cost_per_hour" name="cost_per_hour" type="number" step="0.01" min="0" defaultValue="0" />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="final_price">Preço Final (€)</Label>
-                <Input id="final_price" name="final_price" type="number" step="0.01" min="0" required />
-              </div>
             </div>
 
-            <div className="bg-muted p-3 rounded-lg">
-              <p className="text-sm font-medium text-muted-foreground">
-                A margem será calculada automaticamente:
+            <div className="bg-primary/10 p-3 rounded-lg border border-primary/20">
+              <p className="text-sm font-medium text-primary">
+                💡 Preço Final = Custo das Peças + (Horas × €/Hora)
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Margem = Preço Final - Custo das Peças
+                O preço final é calculado automaticamente quando guardar o serviço.
               </p>
             </div>
 

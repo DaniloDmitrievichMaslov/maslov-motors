@@ -89,6 +89,60 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_car_brands: {
+        Row: {
+          brand_name: string
+          created_at: string
+          id: string
+          models: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          brand_name: string
+          created_at?: string
+          id?: string
+          models?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          brand_name?: string
+          created_at?: string
+          id?: string
+          models?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      custom_service_types: {
+        Row: {
+          created_at: string
+          default_description: string | null
+          default_parts_used: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_description?: string | null
+          default_parts_used?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_description?: string | null
+          default_parts_used?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
