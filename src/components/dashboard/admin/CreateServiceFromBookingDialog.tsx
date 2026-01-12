@@ -1,0 +1,435 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2, Info, Calculator } from "lucide-react";
+import { availableServices } from "@/lib/carData";
+import { Card } from "@/components/ui/card";
+
+type BookingData = {
+  id: string;
+  client_name: string;
+  client_phone: string;
+  message: string;
+  user_id: string;
+};
+
+type CreateServiceFromBookingDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  booking: BookingData | null;
+  onServiceCreated: () => void;
+};
+
+type Car = {
+  id: string;
+  marca: string;
+  modelo: string;
+  matricula: string;
+  quilometragem: number;
+};
+
+type CustomServiceType = {
+  id: string;
+  name: string;
+  description: string | null;
+  default_description: string | null;
+  default_parts_used: string | null;
+};
+
+export default function CreateServiceFromBookingDialog({
+  open,
+  onOpenChange,
+  booking,
+  onServiceCreated,
+}: CreateServiceFromBookingDialogProps) {
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [cars, setCars] = useState<Car[]>([]);
+  const [customServiceTypes, setCustomServiceTypes] = useState<CustomServiceType[]>([]);
+  const [selectedCar, setSelectedCar] = useState("");
+  const [selectedService, setSelectedService] = useState("");
+  const [customService, setCustomService] = useState("");
+  
+  // Form values for auto-calculation
+  const [partsCost, setPartsCost] = useState(0);
+  const [workHours, setWorkHours] = useState(0);
+  const [costPerHour, setCostPerHour] = useState(0);
+  const [description, setDescription] = useState("");
+  const [partsUsed, setPartsUsed] = useState("");
+
+  // Auto-calculated final price
+  const finalPrice = partsCost + (workHours * costPerHour);
+
+  type ServiceOption = {
+    id: string;
+    name: string;
+    description: string;
+    default_description?: string | null;
+    default_parts_used?: string | null;
+  };
+
+  const allServices: ServiceOption[] = [
+    ...availableServices.map(s => ({ ...s, default_description: null, default_parts_used: null })),
+    ...customServiceTypes.map(ct => ({
+      id: `custom_${ct.id}`,
+      name: ct.name,
+      description: ct.description || "",
+      default_description: ct.default_description,
+      default_parts_used: ct.default_parts_used,
+    })),
+  ];
+
+  const selectedServiceData = allServices.find(s => s.id === selectedService);
+  const isOtherService = selectedService === "outro";
+
+  useEffect(() => {
+    if (open && booking) {
+      fetchClientCars();
+      fetchCustomServiceTypes();
+    }
+  }, [open, booking]);
+
+  useEffect(() => {
+    // Auto-fill description and parts when service is selected
+    if (selectedServiceData) {
+      if (selectedServiceData.default_description) {
+        setDescription(selectedServiceData.default_description);
+      }
+      if (selectedServiceData.default_parts_used) {
+        setPartsUsed(selectedServiceData.default_parts_used);
+      }
+    }
+  }, [selectedService]);
+
+  const fetchClientCars = async () => {
+    if (!booking?.user_id) return;
+    
+    const { data, error } = await supabase
+      .from("cars")
+      .select("id, marca, modelo, matricula, quilometragem")
+      .eq("owner_id", booking.user_id);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao carregar carros",
+        description: error.message,
+      });
+    } else {
+      setCars(data || []);
+    }
+  };
+
+  const fetchCustomServiceTypes = async () => {
+    const { data, error } = await supabase
+      .from("custom_service_types")
+      .select("*")
+      .order("name");
+
+    if (!error && data) {
+      setCustomServiceTypes(data);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!selectedCar) {
+      toast({
+        variant: "destructive",
+        title: "Selecione um carro",
+        description: "Por favor, selecione o carro do cliente.",
+      });
+      return;
+    }
+
+    const serviceName = isOtherService ? customService : selectedServiceData?.name;
+
+    if (!serviceName) {
+      toast({
+        variant: "destructive",
+        title: "Selecione um serviço",
+        description: "Por favor, selecione ou descreva o tipo de serviço.",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const mileageAtService = parseInt(formData.get("mileage_at_service") as string) || null;
+
+    try {
+      const { error } = await supabase.from("services").insert({
+        car_id: selectedCar,
+        service_name: serviceName,
+        scheduled_date: formData.get("scheduled_date") as string,
+        status: formData.get("status") as "agendado" | "em_processo" | "concluido",
+        description: description || null,
+        parts_used: partsUsed || null,
+        parts_cost: partsCost,
+        work_hours: workHours,
+        cost_per_hour: costPerHour,
+        final_price: finalPrice,
+        next_revision_date: formData.get("next_revision_date") as string || null,
+        recommendations: formData.get("recommendations") as string || null,
+        mileage_at_service: mileageAtService,
+      });
+
+      if (error) throw error;
+
+      // Update booking status to completed
+      await supabase
+        .from("quote_requests")
+        .update({ status: "concluido" })
+        .eq("id", booking?.id);
+
+      toast({
+        title: "Serviço criado com sucesso!",
+        description: "A marcação foi marcada como concluída.",
+      });
+
+      onServiceCreated();
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao criar serviço",
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!booking) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Criar Serviço da Marcação</DialogTitle>
+          <DialogDescription>
+            Cliente: <strong>{booking.client_name}</strong> | Tel: {booking.client_phone}
+          </DialogDescription>
+        </DialogHeader>
+
+        {/* Info da marcação */}
+        <Card className="p-3 bg-muted/50">
+          <p className="text-sm font-medium mb-1">Detalhes da Marcação:</p>
+          <p className="text-xs text-muted-foreground whitespace-pre-line">{booking.message}</p>
+        </Card>
+
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            {/* Carro */}
+            <div className="grid gap-2">
+              <Label htmlFor="car">Carro do Cliente</Label>
+              <Select value={selectedCar} onValueChange={setSelectedCar} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o carro" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cars.length === 0 ? (
+                    <SelectItem value="_none" disabled>
+                      Cliente sem carros registados
+                    </SelectItem>
+                  ) : (
+                    cars.map((car) => (
+                      <SelectItem key={car.id} value={car.id}>
+                        {car.marca} {car.modelo} ({car.matricula})
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Tipo de Serviço */}
+            <div className="grid gap-2">
+              <Label htmlFor="service_type">Tipo de Serviço</Label>
+              <Select value={selectedService} onValueChange={setSelectedService}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o serviço" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[250px]">
+                  {allServices.map((service) => (
+                    <SelectItem key={service.id} value={service.id}>
+                      {service.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {selectedServiceData && !isOtherService && (
+                <Card className="p-3 bg-primary/5 border-primary/20">
+                  <div className="flex items-start gap-2">
+                    <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">{selectedServiceData.name}</p>
+                      <p className="text-xs text-muted-foreground">{selectedServiceData.description}</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {isOtherService && (
+                <Input
+                  placeholder="Descreva o serviço"
+                  value={customService}
+                  onChange={(e) => setCustomService(e.target.value)}
+                />
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="scheduled_date">Data/Hora</Label>
+                <Input id="scheduled_date" name="scheduled_date" type="datetime-local" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="status">Status</Label>
+                <Select name="status" defaultValue="agendado" required>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="agendado">Agendado</SelectItem>
+                    <SelectItem value="em_processo">Em Processo</SelectItem>
+                    <SelectItem value="concluido">Concluído</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="mileage_at_service">Quilometragem Atual (km)</Label>
+              <Input
+                id="mileage_at_service"
+                name="mileage_at_service"
+                type="number"
+                min="0"
+                defaultValue={cars.find(c => c.id === selectedCar)?.quilometragem || ""}
+                placeholder="Km do veículo"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Detalhes do serviço..."
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="parts_used">Peças Utilizadas</Label>
+              <Textarea
+                id="parts_used"
+                value={partsUsed}
+                onChange={(e) => setPartsUsed(e.target.value)}
+                placeholder="Lista de peças..."
+              />
+            </div>
+
+            {/* Custos com cálculo automático */}
+            <Card className="p-4 space-y-4 bg-muted/30">
+              <div className="flex items-center gap-2">
+                <Calculator className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Cálculo Automático do Preço</span>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="parts_cost" className="text-xs">Custo das Peças (€)</Label>
+                  <Input
+                    id="parts_cost"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={partsCost}
+                    onChange={(e) => setPartsCost(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="work_hours" className="text-xs">Horas de Trabalho</Label>
+                  <Input
+                    id="work_hours"
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    value={workHours}
+                    onChange={(e) => setWorkHours(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="cost_per_hour" className="text-xs">€/Hora</Label>
+                  <Input
+                    id="cost_per_hour"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={costPerHour}
+                    onChange={(e) => setCostPerHour(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 border-t">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    {partsCost}€ + ({workHours}h × {costPerHour}€/h)
+                  </span>
+                  <span className="text-lg font-bold text-primary">
+                    = {finalPrice.toFixed(2)}€
+                  </span>
+                </div>
+              </div>
+            </Card>
+
+            <div className="grid gap-2">
+              <Label htmlFor="next_revision_date">Próxima Revisão</Label>
+              <Input id="next_revision_date" name="next_revision_date" type="date" />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="recommendations">Recomendações</Label>
+              <Textarea id="recommendations" name="recommendations" placeholder="Recomendações para o cliente..." />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  A criar...
+                </>
+              ) : (
+                "Criar Serviço"
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

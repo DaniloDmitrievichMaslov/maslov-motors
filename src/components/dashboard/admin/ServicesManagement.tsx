@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Wrench, Search } from "lucide-react";
+import { Loader2, Plus, Wrench, Search, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import AddServiceDialog from "./AddServiceDialog";
 import EditServiceDialog from "./EditServiceDialog";
+import ManageServiceTypesDialog from "./ManageServiceTypesDialog";
 
 type ServiceWithDetails = {
   id: string;
@@ -50,6 +51,7 @@ export default function ServicesManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showManageTypesDialog, setShowManageTypesDialog] = useState(false);
   const [editingService, setEditingService] = useState<ServiceWithDetails | null>(null);
 
   useEffect(() => {
@@ -156,10 +158,16 @@ export default function ServicesManagement() {
             Lista de todos os serviços agendados e realizados.
           </p>
         </div>
-        <Button onClick={() => setShowAddDialog(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Adicionar Serviço
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowManageTypesDialog(true)}>
+            <Settings className="mr-2 h-4 w-4" />
+            Gerir Tipos
+          </Button>
+          <Button onClick={() => setShowAddDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Adicionar Serviço
+          </Button>
+        </div>
       </div>
 
       <div className="flex gap-4">
@@ -254,6 +262,11 @@ export default function ServicesManagement() {
           onServiceUpdated={handleServiceUpdated}
         />
       )}
+
+      <ManageServiceTypesDialog
+        open={showManageTypesDialog}
+        onOpenChange={setShowManageTypesDialog}
+      />
     </div>
   );
 }

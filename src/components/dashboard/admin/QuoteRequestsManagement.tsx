@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Phone, MessageSquare, CheckCircle, Clock, Calendar, Trash2, FileText } from "lucide-react";
+import { Loader2, Phone, MessageSquare, CheckCircle, Clock, Calendar, Trash2, FileText, Wrench } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -24,6 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CreateServiceFromBookingDialog from "./CreateServiceFromBookingDialog";
 
 type QuoteRequest = {
   id: string;
@@ -59,6 +60,7 @@ export default function QuoteRequestsManagement() {
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("marcacoes");
+  const [createServiceBooking, setCreateServiceBooking] = useState<QuoteRequest | null>(null);
 
   useEffect(() => {
     fetchRequests();
@@ -201,6 +203,18 @@ export default function QuoteRequestsManagement() {
 
           {/* Ações */}
           <div className="flex flex-col sm:flex-row gap-2 pt-2">
+            {type === "booking" && (
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="w-full sm:w-auto"
+                onClick={() => setCreateServiceBooking(request)}
+              >
+                <Wrench className="h-4 w-4 sm:mr-2" />
+                <span className="sm:inline">Criar Serviço</span>
+              </Button>
+            )}
+            
             <Select
               value={request.status}
               onValueChange={(value) =>
@@ -338,6 +352,13 @@ export default function QuoteRequestsManagement() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <CreateServiceFromBookingDialog
+        open={!!createServiceBooking}
+        onOpenChange={(open) => !open && setCreateServiceBooking(null)}
+        booking={createServiceBooking}
+        onServiceCreated={fetchRequests}
+      />
     </div>
   );
 }
