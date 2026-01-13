@@ -210,7 +210,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
     const mileage = typeof mileageAtService === "number" ? mileageAtService : null;
 
     try {
-      // Insert the service
+      // Insert the service (final_price is auto-calculated by the database)
       const { error } = await supabase.from("services").insert({
         car_id: selectedCar,
         service_name: serviceName,
@@ -221,7 +221,6 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
         parts_cost: partsCost,
         work_hours: workHours,
         cost_per_hour: costPerHour,
-        final_price: finalPrice,
         next_revision_date: formData.get("next_revision_date") as string || null,
         recommendations: formData.get("recommendations") as string || null,
         mileage_at_service: mileage,

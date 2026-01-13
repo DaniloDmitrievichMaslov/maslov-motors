@@ -211,7 +211,6 @@ export default function CreateServiceFromBookingDialog({
         parts_cost: partsCost,
         work_hours: workHours,
         cost_per_hour: costPerHour,
-        final_price: finalPrice,
         next_revision_date: formData.get("next_revision_date") as string || null,
         recommendations: formData.get("recommendations") as string || null,
         mileage_at_service: mileage,
