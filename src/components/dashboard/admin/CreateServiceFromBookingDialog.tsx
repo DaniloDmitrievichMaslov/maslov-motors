@@ -95,21 +95,49 @@ export default function CreateServiceFromBookingDialog({
   const selectedServiceData = allServices.find(s => s.id === selectedService);
   const isOtherService = selectedService === "outro";
 
+  const [mileageAtService, setMileageAtService] = useState<number | "">("");
+
   useEffect(() => {
     if (open && booking) {
       fetchClientCars();
       fetchCustomServiceTypes();
+      // Reset form values
+      setSelectedCar("");
+      setSelectedService("");
+      setCustomService("");
+      setDescription("");
+      setPartsUsed("");
+      setMileageAtService("");
+      setPartsCost(0);
+      setWorkHours(0);
+      setCostPerHour(0);
     }
   }, [open, booking]);
 
+  // Auto-fill mileage when car is selected
   useEffect(() => {
-    // Auto-fill description and parts when service is selected
+    if (selectedCar) {
+      const car = cars.find(c => c.id === selectedCar);
+      if (car) {
+        setMileageAtService(car.quilometragem);
+      }
+    } else {
+      setMileageAtService("");
+    }
+  }, [selectedCar, cars]);
+
+  // Auto-fill description and parts when service is selected
+  useEffect(() => {
     if (selectedServiceData) {
       if (selectedServiceData.default_description) {
         setDescription(selectedServiceData.default_description);
+      } else {
+        setDescription("");
       }
       if (selectedServiceData.default_parts_used) {
         setPartsUsed(selectedServiceData.default_parts_used);
+      } else {
+        setPartsUsed("");
       }
     }
   }, [selectedService]);
@@ -170,7 +198,7 @@ export default function CreateServiceFromBookingDialog({
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const mileageAtService = parseInt(formData.get("mileage_at_service") as string) || null;
+    const mileage = typeof mileageAtService === "number" ? mileageAtService : null;
 
     try {
       const { error } = await supabase.from("services").insert({
@@ -186,10 +214,22 @@ export default function CreateServiceFromBookingDialog({
         final_price: finalPrice,
         next_revision_date: formData.get("next_revision_date") as string || null,
         recommendations: formData.get("recommendations") as string || null,
-        mileage_at_service: mileageAtService,
+        mileage_at_service: mileage,
       });
 
       if (error) throw error;
+
+      // Update the car's mileage if it was changed
+      if (mileage !== null) {
+        const { error: carError } = await supabase
+          .from("cars")
+          .update({ quilometragem: mileage })
+          .eq("id", selectedCar);
+
+        if (carError) {
+          console.error("Erro ao atualizar quilometragem do carro:", carError);
+        }
+      }
 
       // Update booking status to completed
       await supabase
@@ -199,7 +239,7 @@ export default function CreateServiceFromBookingDialog({
 
       toast({
         title: "Serviço criado com sucesso!",
-        description: "A marcação foi marcada como concluída.",
+        description: mileage !== null ? "A marcação foi concluída e a quilometragem do carro foi atualizada." : "A marcação foi marcada como concluída.",
       });
 
       onServiceCreated();
@@ -250,7 +290,7 @@ export default function CreateServiceFromBookingDialog({
                   ) : (
                     cars.map((car) => (
                       <SelectItem key={car.id} value={car.id}>
-                        {car.marca} {car.modelo} ({car.matricula})
+                        {car.marca} {car.modelo} ({car.matricula}) - {car.quilometragem} km
                       </SelectItem>
                     ))
                   )}
@@ -322,9 +362,13 @@ export default function CreateServiceFromBookingDialog({
                 name="mileage_at_service"
                 type="number"
                 min="0"
-                defaultValue={cars.find(c => c.id === selectedCar)?.quilometragem || ""}
+                value={mileageAtService}
+                onChange={(e) => setMileageAtService(e.target.value ? parseInt(e.target.value) : "")}
                 placeholder="Km do veículo"
               />
+              <p className="text-xs text-muted-foreground">
+                💡 A quilometragem do carro será atualizada automaticamente ao guardar.
+              </p>
             </div>
 
             <div className="grid gap-2">
@@ -335,6 +379,11 @@ export default function CreateServiceFromBookingDialog({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Detalhes do serviço..."
               />
+              {selectedServiceData?.default_description && (
+                <p className="text-xs text-muted-foreground">
+                  ✓ Pré-preenchido com descrição padrão do tipo de serviço
+                </p>
+              )}
             </div>
 
             <div className="grid gap-2">
@@ -345,6 +394,11 @@ export default function CreateServiceFromBookingDialog({
                 onChange={(e) => setPartsUsed(e.target.value)}
                 placeholder="Lista de peças..."
               />
+              {selectedServiceData?.default_parts_used && (
+                <p className="text-xs text-muted-foreground">
+                  ✓ Pré-preenchido com peças padrão do tipo de serviço
+                </p>
+              )}
             </div>
 
             {/* Custos com cálculo automático */}
