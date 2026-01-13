@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Info } from "lucide-react";
+import { Loader2, Info, Calculator } from "lucide-react";
 import { availableServices } from "@/lib/carData";
 import { Card } from "@/components/ui/card";
 
@@ -38,22 +38,73 @@ type Car = {
   quilometragem: number;
 };
 
+type CustomServiceType = {
+  id: string;
+  name: string;
+  description: string | null;
+  default_description: string | null;
+  default_parts_used: string | null;
+};
+
 export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }: AddServiceDialogProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
   const [cars, setCars] = useState<Car[]>([]);
+  const [customServiceTypes, setCustomServiceTypes] = useState<CustomServiceType[]>([]);
   const [selectedClient, setSelectedClient] = useState("");
   const [selectedCar, setSelectedCar] = useState("");
   const [selectedService, setSelectedService] = useState("");
   const [customService, setCustomService] = useState("");
 
-  const selectedServiceData = availableServices.find(s => s.id === selectedService);
+  // Form values for controlled inputs
+  const [description, setDescription] = useState("");
+  const [partsUsed, setPartsUsed] = useState("");
+  const [mileageAtService, setMileageAtService] = useState<number | "">("");
+  const [partsCost, setPartsCost] = useState(0);
+  const [workHours, setWorkHours] = useState(0);
+  const [costPerHour, setCostPerHour] = useState(0);
+
+  // Auto-calculated final price
+  const finalPrice = partsCost + (workHours * costPerHour);
+
+  type ServiceOption = {
+    id: string;
+    name: string;
+    description: string;
+    default_description?: string | null;
+    default_parts_used?: string | null;
+  };
+
+  const allServices: ServiceOption[] = [
+    ...availableServices.map(s => ({ ...s, default_description: null, default_parts_used: null })),
+    ...customServiceTypes.map(ct => ({
+      id: `custom_${ct.id}`,
+      name: ct.name,
+      description: ct.description || "",
+      default_description: ct.default_description,
+      default_parts_used: ct.default_parts_used,
+    })),
+  ];
+
+  const selectedServiceData = allServices.find(s => s.id === selectedService);
   const isOtherService = selectedService === "outro";
 
   useEffect(() => {
     if (open) {
       fetchClients();
+      fetchCustomServiceTypes();
+      // Reset form
+      setSelectedClient("");
+      setSelectedCar("");
+      setSelectedService("");
+      setCustomService("");
+      setDescription("");
+      setPartsUsed("");
+      setMileageAtService("");
+      setPartsCost(0);
+      setWorkHours(0);
+      setCostPerHour(0);
     }
   }, [open]);
 
@@ -65,6 +116,34 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
       setSelectedCar("");
     }
   }, [selectedClient]);
+
+  // Auto-fill mileage when car is selected
+  useEffect(() => {
+    if (selectedCar) {
+      const car = cars.find(c => c.id === selectedCar);
+      if (car) {
+        setMileageAtService(car.quilometragem);
+      }
+    } else {
+      setMileageAtService("");
+    }
+  }, [selectedCar, cars]);
+
+  // Auto-fill description and parts when service is selected
+  useEffect(() => {
+    if (selectedServiceData) {
+      if (selectedServiceData.default_description) {
+        setDescription(selectedServiceData.default_description);
+      } else {
+        setDescription("");
+      }
+      if (selectedServiceData.default_parts_used) {
+        setPartsUsed(selectedServiceData.default_parts_used);
+      } else {
+        setPartsUsed("");
+      }
+    }
+  }, [selectedService]);
 
   const fetchClients = async () => {
     const { data, error } = await supabase
@@ -100,6 +179,17 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
     }
   };
 
+  const fetchCustomServiceTypes = async () => {
+    const { data, error } = await supabase
+      .from("custom_service_types")
+      .select("*")
+      .order("name");
+
+    if (!error && data) {
+      setCustomServiceTypes(data);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
@@ -117,39 +207,44 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const workHours = parseFloat(formData.get("work_hours") as string) || 0;
-    const costPerHour = parseFloat(formData.get("cost_per_hour") as string) || 0;
-    const partsCost = parseFloat(formData.get("parts_cost") as string) || 0;
-
-    const mileageAtService = parseInt(formData.get("mileage_at_service") as string) || null;
+    const mileage = typeof mileageAtService === "number" ? mileageAtService : null;
 
     try {
+      // Insert the service
       const { error } = await supabase.from("services").insert({
         car_id: selectedCar,
         service_name: serviceName,
         scheduled_date: formData.get("scheduled_date") as string,
         status: formData.get("status") as "agendado" | "em_processo" | "concluido",
-        description: formData.get("description") as string || null,
-        parts_used: formData.get("parts_used") as string || null,
+        description: description || null,
+        parts_used: partsUsed || null,
         parts_cost: partsCost,
         work_hours: workHours,
         cost_per_hour: costPerHour,
+        final_price: finalPrice,
         next_revision_date: formData.get("next_revision_date") as string || null,
         recommendations: formData.get("recommendations") as string || null,
-        mileage_at_service: mileageAtService,
+        mileage_at_service: mileage,
       });
 
       if (error) throw error;
 
+      // Update the car's mileage if it was changed
+      if (mileage !== null) {
+        const { error: carError } = await supabase
+          .from("cars")
+          .update({ quilometragem: mileage })
+          .eq("id", selectedCar);
+
+        if (carError) {
+          console.error("Erro ao atualizar quilometragem do carro:", carError);
+        }
+      }
+
       toast({
         title: "Serviço criado com sucesso!",
+        description: mileage !== null ? "A quilometragem do carro foi atualizada." : undefined,
       });
-
-      // Reset form
-      setSelectedService("");
-      setCustomService("");
-      setSelectedClient("");
-      setSelectedCar("");
 
       onServiceAdded();
     } catch (error: any) {
@@ -165,7 +260,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Criar Novo Serviço</DialogTitle>
           <DialogDescription>
@@ -199,7 +294,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
                 <SelectContent>
                   {cars.map((car) => (
                     <SelectItem key={car.id} value={car.id}>
-                      {car.marca} {car.modelo} ({car.matricula})
+                      {car.marca} {car.modelo} ({car.matricula}) - {car.quilometragem} km
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -214,7 +309,7 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
                   <SelectValue placeholder="Selecione o serviço" />
                 </SelectTrigger>
                 <SelectContent className="max-h-[250px]">
-                  {availableServices.map((service) => (
+                  {allServices.map((service) => (
                     <SelectItem key={service.id} value={service.id}>
                       {service.name}
                     </SelectItem>
@@ -272,55 +367,99 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
                 name="mileage_at_service" 
                 type="number" 
                 min="0"
-                defaultValue={cars.find(c => c.id === selectedCar)?.quilometragem || ""}
+                value={mileageAtService}
+                onChange={(e) => setMileageAtService(e.target.value ? parseInt(e.target.value) : "")}
                 placeholder="Km do veículo no momento do serviço"
               />
+              <p className="text-xs text-muted-foreground">
+                💡 A quilometragem do carro será atualizada automaticamente ao guardar.
+              </p>
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="description">Descrição Adicional</Label>
-              <Textarea id="description" name="description" placeholder="Detalhes adicionais do serviço..." />
+              <Textarea 
+                id="description" 
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Detalhes adicionais do serviço..." 
+              />
+              {selectedServiceData?.default_description && (
+                <p className="text-xs text-muted-foreground">
+                  ✓ Pré-preenchido com descrição padrão do tipo de serviço
+                </p>
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="parts_used">Peças Utilizadas</Label>
-              <Textarea id="parts_used" name="parts_used" placeholder="Lista de peças..." />
+              <Textarea 
+                id="parts_used" 
+                value={partsUsed}
+                onChange={(e) => setPartsUsed(e.target.value)}
+                placeholder="Lista de peças..." 
+              />
+              {selectedServiceData?.default_parts_used && (
+                <p className="text-xs text-muted-foreground">
+                  ✓ Pré-preenchido com peças padrão do tipo de serviço
+                </p>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="parts_cost">Custo das Peças (€)</Label>
-                <Input id="parts_cost" name="parts_cost" type="number" step="0.01" min="0" defaultValue="0" />
+            {/* Custos com cálculo automático */}
+            <Card className="p-4 space-y-4 bg-muted/30">
+              <div className="flex items-center gap-2">
+                <Calculator className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Cálculo Automático do Preço</span>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="work_hours">Horas de Trabalho</Label>
-                <Input id="work_hours" name="work_hours" type="number" step="0.5" min="0" defaultValue="0" />
+              
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <Label htmlFor="parts_cost" className="text-xs">Custo das Peças (€)</Label>
+                  <Input
+                    id="parts_cost"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={partsCost}
+                    onChange={(e) => setPartsCost(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="work_hours" className="text-xs">Horas de Trabalho</Label>
+                  <Input
+                    id="work_hours"
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    value={workHours}
+                    onChange={(e) => setWorkHours(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label htmlFor="cost_per_hour" className="text-xs">€/Hora</Label>
+                  <Input
+                    id="cost_per_hour"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={costPerHour}
+                    onChange={(e) => setCostPerHour(parseFloat(e.target.value) || 0)}
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="parts_cost">Custo das Peças (€)</Label>
-                <Input id="parts_cost" name="parts_cost" type="number" step="0.01" min="0" defaultValue="0" />
+              <div className="pt-2 border-t">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">
+                    {partsCost}€ + ({workHours}h × {costPerHour}€/h)
+                  </span>
+                  <span className="text-lg font-bold text-primary">
+                    = {finalPrice.toFixed(2)}€
+                  </span>
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="work_hours">Horas de Trabalho</Label>
-                <Input id="work_hours" name="work_hours" type="number" step="0.5" min="0" defaultValue="0" />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="cost_per_hour">Custo por Hora (€)</Label>
-                <Input id="cost_per_hour" name="cost_per_hour" type="number" step="0.01" min="0" defaultValue="0" />
-              </div>
-            </div>
-
-            <div className="bg-primary/10 p-3 rounded-lg border border-primary/20">
-              <p className="text-sm font-medium text-primary">
-                💡 Preço Final = Custo das Peças + (Horas × €/Hora)
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                O preço final é calculado automaticamente quando guardar o serviço.
-              </p>
-            </div>
+            </Card>
 
             <div className="grid gap-2">
               <Label htmlFor="next_revision_date">Próxima Revisão Recomendada</Label>
