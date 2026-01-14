@@ -164,7 +164,7 @@ export default function AddClientDialog({
               <p className="text-xs text-muted-foreground">Mínimo 6 caracteres</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Telefone</Label>
+              <Label htmlFor="phone">Telefone *</Label>
               <Input
                 id="phone"
                 type="tel"
@@ -173,6 +173,7 @@ export default function AddClientDialog({
                   setFormData({ ...formData, phone: e.target.value })
                 }
                 placeholder="+351 912 345 678"
+                required
               />
             </div>
           </div>

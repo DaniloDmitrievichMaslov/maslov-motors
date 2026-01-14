@@ -23,9 +23,8 @@ export const signUpSchema = z.object({
     .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, "Apelido contém caracteres inválidos"),
   phone: z
     .string()
-    .regex(/^\+?[0-9\s]{9,20}$/, "Formato de telemóvel inválido")
-    .optional()
-    .or(z.literal("")),
+    .min(1, "Telemóvel é obrigatório")
+    .regex(/^\+?[0-9\s]{9,20}$/, "Formato de telemóvel inválido"),
 });
 
 export const signInSchema = z.object({
