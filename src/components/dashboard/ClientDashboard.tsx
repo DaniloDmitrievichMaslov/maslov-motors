@@ -4,12 +4,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare, CalendarPlus, ChevronDown, ChevronUp, History } from "lucide-react";
+import { Loader2, Car, Calendar, Wrench, LogOut, Plus, TrendingUp, Clock, CheckCircle2, AlertCircle, MessageSquare, CalendarPlus, ChevronDown, ChevronUp, History, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import AddCarDialog from "./client/AddCarDialog";
 import QuoteRequestDialog from "./client/QuoteRequestDialog";
 import BookingDialog from "./client/BookingDialog";
+import EditProfileDialog from "./client/EditProfileDialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type Car = {
@@ -67,6 +68,7 @@ export default function ClientDashboard() {
   const [addCarOpen, setAddCarOpen] = useState(false);
   const [quoteRequestOpen, setQuoteRequestOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [expandedCars, setExpandedCars] = useState<{ [carId: string]: boolean }>({});
 
@@ -152,6 +154,15 @@ export default function ClientDashboard() {
     fetchCarsAndServices();
   };
 
+  const handleProfileUpdated = () => {
+    fetchProfile();
+  };
+
+  const handleAccountDeleted = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   // Calculate stats
   const totalServices = Object.values(services).flat().length;
   const upcomingServices = Object.values(services)
@@ -183,10 +194,21 @@ export default function ClientDashboard() {
                 Bem-vindo, {profile?.first_name || "Cliente"}!
               </p>
             </div>
-            <Button variant="secondary" onClick={handleSignOut} className="shadow-lg">
-              <LogOut className="mr-2 h-4 w-4" />
-              Sair
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                variant="secondary" 
+                size="icon"
+                onClick={() => setEditProfileOpen(true)}
+                className="shadow-lg"
+                title="Definições do Perfil"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+              <Button variant="secondary" onClick={handleSignOut} className="shadow-lg">
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+              </Button>
+            </div>
           </div>
 
           {/* Stats Cards */}
@@ -485,6 +507,16 @@ export default function ClientDashboard() {
             userPhone={profile?.phone || null}
             cars={cars}
           />
+
+          {profile && (
+            <EditProfileDialog
+              open={editProfileOpen}
+              onOpenChange={setEditProfileOpen}
+              profile={profile}
+              onProfileUpdated={handleProfileUpdated}
+              onAccountDeleted={handleAccountDeleted}
+            />
+          )}
         </>
       )}
     </div>
