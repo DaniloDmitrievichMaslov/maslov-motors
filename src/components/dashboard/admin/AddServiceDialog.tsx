@@ -59,7 +59,6 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
 
   // Form values for controlled inputs
   const [description, setDescription] = useState("");
-  const [partsUsed, setPartsUsed] = useState("");
   const [mileageAtService, setMileageAtService] = useState<number | "">("");
   const [partsCost, setPartsCost] = useState(0);
   const [workHours, setWorkHours] = useState(0);
@@ -100,7 +99,6 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
       setSelectedService("");
       setCustomService("");
       setDescription("");
-      setPartsUsed("");
       setMileageAtService("");
       setPartsCost(0);
       setWorkHours(0);
@@ -129,18 +127,13 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
     }
   }, [selectedCar, cars]);
 
-  // Auto-fill description and parts when service is selected
+  // Auto-fill description when service is selected
   useEffect(() => {
     if (selectedServiceData) {
       if (selectedServiceData.default_description) {
         setDescription(selectedServiceData.default_description);
       } else {
         setDescription("");
-      }
-      if (selectedServiceData.default_parts_used) {
-        setPartsUsed(selectedServiceData.default_parts_used);
-      } else {
-        setPartsUsed("");
       }
     }
   }, [selectedService]);
@@ -217,7 +210,6 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
         scheduled_date: formData.get("scheduled_date") as string,
         status: formData.get("status") as "agendado" | "em_processo" | "concluido",
         description: description || null,
-        parts_used: partsUsed || null,
         parts_cost: partsCost,
         work_hours: workHours,
         cost_per_hour: costPerHour,
@@ -386,21 +378,6 @@ export default function AddServiceDialog({ open, onOpenChange, onServiceAdded }:
               {selectedServiceData?.default_description && (
                 <p className="text-xs text-muted-foreground">
                   ✓ Pré-preenchido com descrição padrão do tipo de serviço
-                </p>
-              )}
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="parts_used">Peças Utilizadas</Label>
-              <Textarea 
-                id="parts_used" 
-                value={partsUsed}
-                onChange={(e) => setPartsUsed(e.target.value)}
-                placeholder="Lista de peças..." 
-              />
-              {selectedServiceData?.default_parts_used && (
-                <p className="text-xs text-muted-foreground">
-                  ✓ Pré-preenchido com peças padrão do tipo de serviço
                 </p>
               )}
             </div>
