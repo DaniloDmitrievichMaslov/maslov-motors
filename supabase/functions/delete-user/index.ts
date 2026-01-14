@@ -40,21 +40,6 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Check if the current user is an admin
-    const { data: roleData, error: roleError } = await supabaseClient
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', currentUser.id)
-      .eq('role', 'admin')
-      .maybeSingle()
-
-    if (roleError || !roleData) {
-      return new Response(
-        JSON.stringify({ error: 'Only admins can delete users' }),
-        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
     // Get the user ID to delete from the request body
     const { userId } = await req.json()
 
@@ -68,10 +53,32 @@ Deno.serve(async (req) => {
       )
     }
 
-    // Prevent admin from deleting themselves
-    if (userId === currentUser.id) {
+    // Check if the current user is an admin
+    const { data: roleData, error: roleError } = await supabaseClient
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', currentUser.id)
+      .eq('role', 'admin')
+      .maybeSingle()
+
+    const isAdmin = !roleError && roleData
+
+    // Allow deletion if:
+    // 1. User is deleting their own account
+    // 2. User is an admin (can delete any non-admin account)
+    const isDeletingSelf = userId === currentUser.id
+
+    if (!isDeletingSelf && !isAdmin) {
       return new Response(
-        JSON.stringify({ error: 'Cannot delete your own account' }),
+        JSON.stringify({ error: 'You can only delete your own account' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Prevent admin from deleting themselves (admins should use a different process)
+    if (isDeletingSelf && isAdmin) {
+      return new Response(
+        JSON.stringify({ error: 'Admins cannot delete their own account through this method' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
