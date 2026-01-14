@@ -236,13 +236,14 @@ export default function Auth() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Telemóvel (opcional)</Label>
+                  <Label htmlFor="phone">Telemóvel *</Label>
                   <Input
                     id="phone"
                     name="phone"
                     type="tel"
                     placeholder="+351 912 345 678"
                     maxLength={20}
+                    required
                     className={errors.phone ? "border-destructive" : ""}
                   />
                   {errors.phone && (
