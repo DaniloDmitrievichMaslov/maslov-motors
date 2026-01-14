@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Phone, User, Pencil, Trash2, Eye, UserPlus } from "lucide-react";
+import { Loader2, Mail, Phone, User, Pencil, Trash2, Eye, UserPlus, KeyRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import EditClientDialog from "./EditClientDialog";
 import AddClientDialog from "./AddClientDialog";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 
 type Client = {
   id: string;
@@ -44,6 +45,7 @@ export default function ClientsManagement() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showCarsDialog, setShowCarsDialog] = useState(false);
+  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -71,6 +73,11 @@ export default function ClientsManagement() {
   const handleDeleteClick = (client: Client) => {
     setSelectedClient(client);
     setShowDeleteDialog(true);
+  };
+
+  const handlePasswordClick = (client: Client) => {
+    setSelectedClient(client);
+    setShowPasswordDialog(true);
   };
 
   const handleDelete = async () => {
@@ -252,7 +259,7 @@ export default function ClientsManagement() {
                 <div className="text-xs text-muted-foreground pt-2">
                   Cliente desde {new Date(client.created_at).toLocaleDateString("pt-PT")}
                 </div>
-                <div className="flex gap-2 mt-4">
+                <div className="flex flex-wrap gap-2 mt-4">
                   <Button
                     variant="outline"
                     size="sm"
@@ -268,6 +275,14 @@ export default function ClientsManagement() {
                   >
                     <Pencil className="h-4 w-4 mr-2" />
                     Editar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePasswordClick(client)}
+                  >
+                    <KeyRound className="h-4 w-4 mr-2" />
+                    Password
                   </Button>
                   <Button
                     variant="destructive"
@@ -351,6 +366,12 @@ export default function ClientsManagement() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          <ChangePasswordDialog
+            open={showPasswordDialog}
+            onOpenChange={setShowPasswordDialog}
+            client={selectedClient}
+          />
         </>
       )}
     </div>

@@ -68,7 +68,6 @@ export default function CreateServiceFromBookingDialog({
   const [workHours, setWorkHours] = useState(0);
   const [costPerHour, setCostPerHour] = useState(0);
   const [description, setDescription] = useState("");
-  const [partsUsed, setPartsUsed] = useState("");
 
   // Auto-calculated final price
   const finalPrice = partsCost + (workHours * costPerHour);
@@ -106,7 +105,6 @@ export default function CreateServiceFromBookingDialog({
       setSelectedService("");
       setCustomService("");
       setDescription("");
-      setPartsUsed("");
       setMileageAtService("");
       setPartsCost(0);
       setWorkHours(0);
@@ -126,18 +124,13 @@ export default function CreateServiceFromBookingDialog({
     }
   }, [selectedCar, cars]);
 
-  // Auto-fill description and parts when service is selected
+  // Auto-fill description when service is selected
   useEffect(() => {
     if (selectedServiceData) {
       if (selectedServiceData.default_description) {
         setDescription(selectedServiceData.default_description);
       } else {
         setDescription("");
-      }
-      if (selectedServiceData.default_parts_used) {
-        setPartsUsed(selectedServiceData.default_parts_used);
-      } else {
-        setPartsUsed("");
       }
     }
   }, [selectedService]);
@@ -207,7 +200,6 @@ export default function CreateServiceFromBookingDialog({
         scheduled_date: formData.get("scheduled_date") as string,
         status: formData.get("status") as "agendado" | "em_processo" | "concluido",
         description: description || null,
-        parts_used: partsUsed || null,
         parts_cost: partsCost,
         work_hours: workHours,
         cost_per_hour: costPerHour,
@@ -381,21 +373,6 @@ export default function CreateServiceFromBookingDialog({
               {selectedServiceData?.default_description && (
                 <p className="text-xs text-muted-foreground">
                   ✓ Pré-preenchido com descrição padrão do tipo de serviço
-                </p>
-              )}
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="parts_used">Peças Utilizadas</Label>
-              <Textarea
-                id="parts_used"
-                value={partsUsed}
-                onChange={(e) => setPartsUsed(e.target.value)}
-                placeholder="Lista de peças..."
-              />
-              {selectedServiceData?.default_parts_used && (
-                <p className="text-xs text-muted-foreground">
-                  ✓ Pré-preenchido com peças padrão do tipo de serviço
                 </p>
               )}
             </div>
