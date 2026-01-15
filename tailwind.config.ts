@@ -109,11 +109,51 @@ export default {
         "fade-in": {
           from: {
             opacity: "0",
-            transform: "translateY(10px)",
+            transform: "translateY(20px)",
           },
           to: {
             opacity: "1",
             transform: "translateY(0)",
+          },
+        },
+        "fade-in-up": {
+          from: {
+            opacity: "0",
+            transform: "translateY(30px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "fade-in-down": {
+          from: {
+            opacity: "0",
+            transform: "translateY(-20px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "slide-in-left": {
+          from: {
+            opacity: "0",
+            transform: "translateX(-30px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateX(0)",
+          },
+        },
+        "slide-in-right": {
+          from: {
+            opacity: "0",
+            transform: "translateX(30px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateX(0)",
           },
         },
         "slide-in": {
@@ -129,20 +169,88 @@ export default {
         "scale-in": {
           from: {
             opacity: "0",
-            transform: "scale(0.95)",
+            transform: "scale(0.9)",
           },
           to: {
             opacity: "1",
             transform: "scale(1)",
           },
         },
+        "scale-in-bounce": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.8)",
+          },
+          "70%": {
+            opacity: "1",
+            transform: "scale(1.05)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+        },
+        "blur-in": {
+          from: {
+            opacity: "0",
+            filter: "blur(10px)",
+          },
+          to: {
+            opacity: "1",
+            filter: "blur(0)",
+          },
+        },
+        "glow-pulse": {
+          "0%, 100%": {
+            boxShadow: "0 0 20px hsl(var(--primary) / 0.3)",
+          },
+          "50%": {
+            boxShadow: "0 0 40px hsl(var(--primary) / 0.5)",
+          },
+        },
+        "border-flow": {
+          "0%, 100%": {
+            backgroundPosition: "0% 50%",
+          },
+          "50%": {
+            backgroundPosition: "100% 50%",
+          },
+        },
+        "rotate-in": {
+          from: {
+            opacity: "0",
+            transform: "rotate(-10deg) scale(0.9)",
+          },
+          to: {
+            opacity: "1",
+            transform: "rotate(0) scale(1)",
+          },
+        },
+        wiggle: {
+          "0%, 100%": {
+            transform: "rotate(-3deg)",
+          },
+          "50%": {
+            transform: "rotate(3deg)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.5s ease-out",
-        "slide-in": "slide-in 0.4s ease-out",
-        "scale-in": "scale-in 0.3s ease-out",
+        "fade-in": "fade-in 0.6s ease-out forwards",
+        "fade-in-up": "fade-in-up 0.7s ease-out forwards",
+        "fade-in-down": "fade-in-down 0.5s ease-out forwards",
+        "slide-in": "slide-in 0.4s ease-out forwards",
+        "slide-in-left": "slide-in-left 0.5s ease-out forwards",
+        "slide-in-right": "slide-in-right 0.5s ease-out forwards",
+        "scale-in": "scale-in 0.4s ease-out forwards",
+        "scale-in-bounce": "scale-in-bounce 0.5s ease-out forwards",
+        "blur-in": "blur-in 0.4s ease-out forwards",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "border-flow": "border-flow 3s ease infinite",
+        "rotate-in": "rotate-in 0.5s ease-out forwards",
+        wiggle: "wiggle 0.5s ease-in-out",
       },
     },
   },
