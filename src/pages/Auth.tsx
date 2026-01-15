@@ -128,27 +128,37 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative">
-      <Link to="/" className="absolute top-4 left-4 md:top-6 md:left-6">
-        <Button variant="ghost" size="sm" className="gap-2">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute inset-0 bg-gradient-hero opacity-10"></div>
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse-subtle"></div>
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse-subtle" style={{ animationDelay: '1s' }}></div>
+      
+      <Link to="/" className="absolute top-4 left-4 md:top-6 md:left-6 z-10">
+        <Button variant="ghost" size="sm" className="gap-2 hover-lift">
           <ArrowLeft className="h-4 w-4" />
           <span className="hidden sm:inline">Voltar</span>
         </Button>
       </Link>
       
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md relative z-10 animate-scale-in glass border-border/30 shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">Maslov Motors</CardTitle>
-          <CardDescription>Gestão de Oficina</CardDescription>
+          <div className="mx-auto mb-4 p-3 bg-primary/10 rounded-2xl w-fit animate-fade-in">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-glow rounded-xl flex items-center justify-center">
+              <span className="text-2xl font-bold text-white">M</span>
+            </div>
+          </div>
+          <CardTitle className="text-3xl font-bold animate-fade-in" style={{ animationDelay: '0.1s' }}>Maslov Motors</CardTitle>
+          <CardDescription className="animate-fade-in" style={{ animationDelay: '0.2s' }}>Gestão de Oficina</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Registar</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsTrigger value="signin" className="transition-smooth">Entrar</TabsTrigger>
+              <TabsTrigger value="signup" className="transition-smooth">Registar</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin">
+            <TabsContent value="signin" className="animate-fade-in">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
@@ -157,10 +167,10 @@ export default function Auth() {
                     name="email"
                     type="email"
                     placeholder="seu@email.com"
-                    className={errors.email ? "border-destructive" : ""}
+                    className={`transition-smooth ${errors.email ? "border-destructive" : "focus:border-primary"}`}
                   />
                   {errors.email && (
-                    <p className="text-sm text-destructive">{errors.email}</p>
+                    <p className="text-sm text-destructive animate-fade-in">{errors.email}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -170,13 +180,13 @@ export default function Auth() {
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className={errors.password ? "border-destructive" : ""}
+                    className={`transition-smooth ${errors.password ? "border-destructive" : "focus:border-primary"}`}
                   />
                   {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password}</p>
+                    <p className="text-sm text-destructive animate-fade-in">{errors.password}</p>
                   )}
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full transition-smooth hover-lift" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -189,7 +199,7 @@ export default function Auth() {
               </form>
             </TabsContent>
 
-            <TabsContent value="signup">
+            <TabsContent value="signup" className="animate-fade-in">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -200,10 +210,10 @@ export default function Auth() {
                       type="text"
                       placeholder="João"
                       maxLength={50}
-                      className={errors.firstName ? "border-destructive" : ""}
+                      className={`transition-smooth ${errors.firstName ? "border-destructive" : "focus:border-primary"}`}
                     />
                     {errors.firstName && (
-                      <p className="text-sm text-destructive">{errors.firstName}</p>
+                      <p className="text-sm text-destructive animate-fade-in">{errors.firstName}</p>
                     )}
                   </div>
                   <div className="space-y-2">
@@ -214,10 +224,10 @@ export default function Auth() {
                       type="text"
                       placeholder="Silva"
                       maxLength={50}
-                      className={errors.lastName ? "border-destructive" : ""}
+                      className={`transition-smooth ${errors.lastName ? "border-destructive" : "focus:border-primary"}`}
                     />
                     {errors.lastName && (
-                      <p className="text-sm text-destructive">{errors.lastName}</p>
+                      <p className="text-sm text-destructive animate-fade-in">{errors.lastName}</p>
                     )}
                   </div>
                 </div>
@@ -229,10 +239,10 @@ export default function Auth() {
                     type="email"
                     placeholder="seu@email.com"
                     maxLength={255}
-                    className={errors.email ? "border-destructive" : ""}
+                    className={`transition-smooth ${errors.email ? "border-destructive" : "focus:border-primary"}`}
                   />
                   {errors.email && (
-                    <p className="text-sm text-destructive">{errors.email}</p>
+                    <p className="text-sm text-destructive animate-fade-in">{errors.email}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -244,10 +254,10 @@ export default function Auth() {
                     placeholder="+351 912 345 678"
                     maxLength={20}
                     required
-                    className={errors.phone ? "border-destructive" : ""}
+                    className={`transition-smooth ${errors.phone ? "border-destructive" : "focus:border-primary"}`}
                   />
                   {errors.phone && (
-                    <p className="text-sm text-destructive">{errors.phone}</p>
+                    <p className="text-sm text-destructive animate-fade-in">{errors.phone}</p>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -258,13 +268,13 @@ export default function Auth() {
                     type="password"
                     placeholder="••••••••"
                     maxLength={72}
-                    className={errors.password ? "border-destructive" : ""}
+                    className={`transition-smooth ${errors.password ? "border-destructive" : "focus:border-primary"}`}
                   />
                   {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password}</p>
+                    <p className="text-sm text-destructive animate-fade-in">{errors.password}</p>
                   )}
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full transition-smooth hover-lift" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
