@@ -29,6 +29,11 @@ Antes de colar o conteúdo no Word, configure o documento com as seguintes espec
 - Esquerda: 3 cm
 - Direita: 2,5 cm
 
+### Cabeçalho e Rodapé
+- **Cabeçalho:** "Maslov Motors - Sistema de Gestão para Oficina Automóvel" (alinhado à direita, tamanho 8)
+- **Rodapé:** Número de página centrado, tamanho 10
+- **Primeira página:** Sem cabeçalho/rodapé (capa)
+
 ---
 
 # ════════════════════════════════════════════════════════════════
@@ -39,9 +44,13 @@ Antes de colar o conteúdo no Word, configure o documento com as seguintes espec
 
 # CAPA
 
+[INSERIR LOGOTIPO DA ESCOLA - PROFITECLA]
+
 **PROFITECLA - Escola Profissional**
 
 ---
+
+[INSERIR LOGOTIPO DO PROJETO - MASLOV MOTORS]
 
 # Maslov Motors
 ## Sistema de Gestão para Oficina Automóvel
@@ -61,6 +70,10 @@ Antes de colar o conteúdo no Word, configure o documento com as seguintes espec
 ---
 
 # PÁGINA DE ROSTO
+
+[INSERIR LOGOTIPO DA ESCOLA]
+
+[INSERIR LOGOTIPO DO PROJETO]
 
 Declaro que este trabalho foi realizado por mim, Danilo Dmitrievich Maslov, no âmbito da Prova de Aptidão Profissional do Curso Técnico de Gestão e Programação de Sistemas Informáticos, sob orientação do professor Filipe Martins.
 
@@ -179,18 +192,20 @@ X. Anexos
 - Figura 1: Diagrama de arquitetura do sistema
 - Figura 2: Diagrama Entidade-Relacionamento da base de dados
 - Figura 3: Diagrama de casos de uso
-- Figura 4: Mockup da página inicial
-- Figura 5: Mockup do dashboard do cliente
-- Figura 6: Mockup do dashboard do administrador
-- Figura 7: Ecrã de login da aplicação
-- Figura 8: Dashboard do cliente
-- Figura 9: Dashboard do administrador
-- Figura 10: Gestão de veículos
-- Figura 11: Gestão de serviços
-- Figura 12: Chatbot com IA
-- Figura 13: Relatórios e estatísticas
-- Figura 14: Edição de perfil do cliente
-- Figura 15: Landing page com animações
+- Figura 4: Diagrama de navegação da aplicação
+- Figura 5: Fluxo de eliminação de conta
+- Figura 6: Mockup da página inicial
+- Figura 7: Mockup do dashboard do cliente
+- Figura 8: Mockup do dashboard do administrador
+- Figura 9: Ecrã de login da aplicação
+- Figura 10: Dashboard do cliente
+- Figura 11: Dashboard do administrador
+- Figura 12: Gestão de veículos
+- Figura 13: Gestão de serviços
+- Figura 14: Chatbot com IA
+- Figura 15: Relatórios e estatísticas
+- Figura 16: Edição de perfil do cliente
+- Figura 17: Landing page com animações
 
 ---
 
@@ -200,16 +215,9 @@ X. Anexos
 - Tabela 2: Comparação de soluções backend
 - Tabela 3: Requisitos funcionais do sistema
 - Tabela 4: Requisitos não funcionais do sistema
-- Tabela 5: Estrutura da tabela profiles
-- Tabela 6: Estrutura da tabela cars
-- Tabela 7: Estrutura da tabela services
-- Tabela 8: Estrutura da tabela quote_requests
-- Tabela 9: Estrutura da tabela user_roles
-- Tabela 10: Estrutura da tabela custom_car_brands
-- Tabela 11: Estrutura da tabela custom_service_types
-- Tabela 12: Estrutura da tabela availability_slots
-- Tabela 13: Casos de teste realizados
-- Tabela 14: Resultados dos testes de desempenho
+- Tabela 5: Stack tecnológica do projeto (versões)
+- Tabela 6: Casos de teste realizados
+- Tabela 7: Resultados dos testes de desempenho
 
 ---
 
@@ -260,7 +268,7 @@ A escolha deste tema para a Prova de Aptidão Profissional foi motivada por dive
 
 **Interesse Pessoal:** O nome "Maslov Motors" reflete uma ligação pessoal ao projeto, tornando-o mais significativo e motivador. O interesse pelo setor automóvel, aliado à paixão pela programação, criou uma oportunidade ideal para desenvolver um projeto que combina ambas as áreas.
 
-**Relevância Prática:** Existe uma necessidade real no mercado por soluções de gestão acessíveis para pequenas e médias oficinas. Muitas não têm recursos para sistemas empresariais complexos e caros, mas beneficiariam significativamente de uma ferramenta digital simples e eficaz.
+**Relevância Prática:** Existe uma necessidade real no mercado por soluções de gestão acessíveis para pequenas e médias oficinas. Muitas não têm recursos para sistemas empresariais complexos e caros, mas beneficiariam significativamente de uma ferramenta digital simples e eficaz. Este projeto responde a uma necessidade identificada junto de potenciais utilizadores reais.
 
 **Aplicação de Conhecimentos:** O projeto permite aplicar e consolidar conhecimentos adquiridos ao longo do curso, incluindo programação web, bases de dados, design de interfaces, segurança informática e metodologias de desenvolvimento de software.
 
@@ -293,7 +301,7 @@ A escolha deste tema para a Prova de Aptidão Profissional foi motivada por dive
 
 ## 1.5. Metodologia de Trabalho
 
-O desenvolvimento do projeto seguiu uma metodologia iterativa e incremental, inspirada nos princípios ágeis, adaptada ao contexto individual de desenvolvimento:
+O desenvolvimento do projeto seguiu uma metodologia iterativa e incremental, inspirada nos princípios ágeis, adaptada ao contexto individual de desenvolvimento. Esta abordagem permitiu priorizar as funcionalidades core (essenciais) para garantir um Produto Mínimo Viável (MVP) estável, ajustando o âmbito conforme necessário ao longo do desenvolvimento.
 
 **Fase 1 - Planeamento e Análise (2 semanas)**
 - Definição do âmbito do projeto
@@ -344,13 +352,13 @@ O presente relatório está organizado em dez capítulos principais:
 
 **Capítulo I - Introdução:** Apresenta o contexto, motivação, objetivos e metodologia do projeto.
 
-**Capítulo II - Fundamentação Teórica:** Explora os conceitos técnicos, tecnologias e paradigmas relevantes para o desenvolvimento.
+**Capítulo II - Fundamentação Teórica:** Explora os conceitos técnicos, paradigmas e tecnologias relevantes para o desenvolvimento, de forma genérica.
 
 **Capítulo III - Análise do Problema e Planeamento:** Detalha o levantamento de requisitos, análise do contexto e planeamento do projeto.
 
 **Capítulo IV - Conceção e Arquitetura:** Descreve a arquitetura do sistema, modelação de dados e design da interface.
 
-**Capítulo V - Desenvolvimento e Implementação:** Documenta o processo de desenvolvimento do backend e frontend.
+**Capítulo V - Desenvolvimento e Implementação:** Documenta o processo de desenvolvimento do backend e frontend, incluindo versões específicas das tecnologias utilizadas.
 
 **Capítulo VI - Testes e Validação:** Apresenta a estratégia de testes e resultados obtidos.
 
@@ -360,7 +368,7 @@ O presente relatório está organizado em dez capítulos principais:
 
 **Capítulo IX - Referências Bibliográficas:** Lista todas as fontes consultadas.
 
-**Capítulo X - Anexos:** Inclui código, diagramas, manual de utilizador e materiais complementares.
+**Capítulo X - Anexos:** Inclui capturas de ecrã, diagramas técnicos, manual de utilizador e materiais complementares.
 
 ---
 
@@ -436,6 +444,8 @@ O desenvolvimento moderno em React favorece a programação funcional através d
 
 ## 2.3. Tecnologias Utilizadas
 
+Este capítulo apresenta uma visão geral das principais tecnologias utilizadas no projeto. As versões específicas e detalhes técnicos de implementação são apresentados no Capítulo V (Desenvolvimento e Implementação).
+
 ### 2.3.1. React
 
 React é uma biblioteca JavaScript para construção de interfaces de utilizador, desenvolvida e mantida pela Meta (Facebook). Foi escolhida por:
@@ -495,21 +505,6 @@ Lovable é uma plataforma de desenvolvimento assistida por IA que permite:
 - **Integração Supabase:** Lovable Cloud para backend
 - **Deploy automático:** Publicação instantânea
 - **Preview em tempo real:** Visualização das alterações em tempo real
-
-### 2.3.7. Outras Bibliotecas
-
-| Biblioteca | Versão | Propósito |
-|------------|--------|-----------|
-| React Router | ^6.30.1 | Navegação e routing |
-| React Query | ^5.83.0 | Gestão de estado servidor |
-| React Hook Form | ^7.61.1 | Gestão de formulários |
-| Zod | ^3.25.76 | Validação de dados |
-| Shadcn/ui | - | Componentes de interface |
-| Lucide React | ^0.462.0 | Ícones |
-| Recharts | ^2.15.4 | Gráficos e visualizações |
-| Date-fns | ^3.6.0 | Manipulação de datas |
-| Framer Motion | - | Animações (via Tailwind) |
-| Sonner | ^1.7.4 | Notificações toast |
 
 ## 2.4. Comparação de Tecnologias
 
@@ -758,45 +753,44 @@ O sistema deve permitir:
 │  └────────┬────────┘          └────────┬────────┘           │
 │           │                            │                     │
 │  ┌────────┴────────┐          ┌────────┴────────┐           │
-│  │ Gerir Serviços  │          │ Gerir Orçamentos│           │
+│  │ Gerir Serviços  │          │ Ver Relatórios  │           │
 │  └────────┬────────┘          └────────┬────────┘           │
 │           │                            │                     │
 │  ┌────────┴────────┐          ┌────────┴────────┐           │
-│  │  Ver Relatórios │          │Gerir Agendamentos│          │
+│  │Gerir Orçamentos │          │ Gerir Marcas    │           │
 │  └────────┬────────┘          └────────┬────────┘           │
 │           │                            │                     │
 │  ┌────────┴────────┐          ┌────────┴────────┐           │
-│  │  Gerir Tipos    │          │  Gerir Marcas   │           │
+│  │ Alterar Pass.   │          │ Gerir Tipos     │           │
+│  │   Clientes      │          │   Serviços      │           │
 │  └─────────────────┘          └─────────────────┘           │
 │                                                              │
-│           👤 Administrador                                   │
+│           👔 Administrador                                   │
 │                                                              │
-└─────────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ## 3.4. Estudo do Contexto
 
 ### 3.4.1. Público-Alvo
 
-**Clientes:**
-- Proprietários de veículos que utilizam serviços de oficina
-- Idade: 18-70 anos
-- Literacia digital variável
-- Necessidade de acesso fácil a informação sobre os seus veículos
+**Clientes (Utilizadores):**
+- Proprietários de veículos
+- Faixa etária: 18-65 anos
+- Nível tecnológico: Básico a intermédio
+- Necessidade: Gestão simples dos seus veículos e serviços
 
-**Administradores:**
-- Proprietários ou gestores de oficinas
-- Mecânicos responsáveis pela receção
-- Necessidade de controlo sobre operações e finanças
+**Administradores (Oficina):**
+- Funcionários da oficina
+- Responsáveis pela gestão operacional
+- Necessidade: Ferramentas de gestão eficientes
 
-### 3.4.2. Análise da Concorrência
+### 3.4.2. Análise de Concorrência
 
-Foram analisadas soluções existentes no mercado:
-
-| Solução | Pontos Fortes | Pontos Fracos |
-|---------|---------------|---------------|
-| Software comercial | Completo | Caro, complexo |
-| Folhas Excel | Acessível | Limitado, propenso a erros |
+| Solução | Vantagens | Desvantagens |
+|---------|-----------|--------------|
+| Software comercial | Funcionalidades completas | Custo elevado, complexidade |
+| Excel | Familiar, flexível | Manual, propenso a erros |
 | Fichas em papel | Simples | Difícil gestão, perda de dados |
 
 ## 3.5. Planeamento e Gestão do Projeto
@@ -889,68 +883,126 @@ Foram analisadas soluções existentes no mercado:
 
 ### 4.2.1. Diagrama Entidade-Relacionamento
 
+O diagrama seguinte apresenta visualmente as relações entre as entidades principais do sistema:
+
 ```
-┌─────────────────┐       ┌─────────────────┐
-│    profiles     │       │   user_roles    │
-├─────────────────┤       ├─────────────────┤
-│ id (PK)         │───────│ id (PK)         │
-│ first_name      │       │ user_id (FK)    │
-│ last_name       │       │ role            │
-│ email           │       │ created_at      │
-│ phone           │       └─────────────────┘
-│ created_at      │
-│ updated_at      │
-└────────┬────────┘
-         │
-         │ 1:N
-         │
-┌────────┴────────┐       ┌─────────────────┐
-│      cars       │       │    services     │
-├─────────────────┤       ├─────────────────┤
-│ id (PK)         │───────│ id (PK)         │
-│ owner_id (FK)   │       │ car_id (FK)     │
-│ marca           │       │ service_name    │
-│ modelo          │       │ scheduled_date  │
-│ matricula       │       │ status          │
-│ ano             │       │ description     │
-│ cor             │       │ work_hours      │
-│ quilometragem   │       │ cost_per_hour   │
-│ created_at      │       │ parts_cost      │
-│ updated_at      │       │ final_price     │
-└─────────────────┘       │ margin          │
-                          │ parts_used      │
-┌─────────────────┐       │ recommendations │
-│ quote_requests  │       │ mileage_at_serv │
-├─────────────────┤       │ next_rev_date   │
-│ id (PK)         │       │ created_at      │
-│ user_id (FK)    │       │ updated_at      │
-│ client_name     │       └─────────────────┘
-│ client_phone    │
-│ message         │       ┌─────────────────┐
-│ preferred_date  │       │custom_car_brands│
-│ preferred_time  │       ├─────────────────┤
-│ status          │       │ id (PK)         │
-│ slot_id (FK)    │       │ brand_name      │
-│ created_at      │       │ models          │
-│ updated_at      │       │ created_at      │
-└─────────────────┘       │ updated_at      │
-                          └─────────────────┘
-┌─────────────────┐
-│availability_slots│       ┌─────────────────┐
-├─────────────────┤       │custom_service_  │
-│ id (PK)         │       │    types        │
-│ date            │       ├─────────────────┤
-│ start_time      │       │ id (PK)         │
-│ end_time        │       │ name            │
-│ max_bookings    │       │ description     │
-│ current_bookings│       │ default_desc    │
-│ is_available    │       │ default_parts   │
-│ created_at      │       │ created_at      │
-│ updated_at      │       │ updated_at      │
-└─────────────────┘       └─────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     DIAGRAMA ENTIDADE-RELACIONAMENTO                         │
+│                           Maslov Motors                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                          ┌─────────────────┐
+                          │   auth.users    │
+                          │   (Supabase)    │
+                          ├─────────────────┤
+                          │ PK: id (UUID)   │
+                          │    email        │
+                          │    password     │
+                          └────────┬────────┘
+                                   │
+                                   │ 1:1
+                                   ▼
+        ┌──────────────────────────┴──────────────────────────┐
+        │                                                      │
+        ▼                                                      ▼
+┌───────────────┐                                    ┌─────────────────┐
+│   profiles    │                                    │   user_roles    │
+├───────────────┤                                    ├─────────────────┤
+│ PK: id (UUID) │◄───────────────────────────────────│ PK: id (UUID)   │
+│    first_name │                                    │ FK: user_id     │
+│    last_name  │                                    │    role (enum)  │
+│    email      │                                    │    created_at   │
+│    phone      │                                    └─────────────────┘
+│    created_at │                                    
+│    updated_at │                                    ┌─────────────────┐
+└───────┬───────┘                                    │ custom_car_     │
+        │                                            │    brands       │
+        │ 1:N                                        ├─────────────────┤
+        │                                            │ PK: id (UUID)   │
+        ▼                                            │    brand_name   │
+┌───────────────┐                                    │    models[]     │
+│     cars      │                                    │    created_at   │
+├───────────────┤                                    │    updated_at   │
+│ PK: id (UUID) │                                    └─────────────────┘
+│ FK: owner_id  │─────────────────────┐
+│    marca      │                     │              ┌─────────────────┐
+│    modelo     │                     │              │ custom_service_ │
+│    matricula  │                     │              │     types       │
+│    ano        │                     │              ├─────────────────┤
+│    cor        │                     │              │ PK: id (UUID)   │
+│    quilometra │                     │              │    name         │
+│    created_at │                     │              │    description  │
+│    updated_at │                     │              │    default_desc │
+└───────┬───────┘                     │              │    default_part │
+        │                             │              │    created_at   │
+        │ 1:N                         │              │    updated_at   │
+        │                             │              └─────────────────┘
+        ▼                             │
+┌───────────────┐                     │              ┌─────────────────┐
+│   services    │                     │              │ availability_   │
+├───────────────┤                     │              │    slots        │
+│ PK: id (UUID) │                     │              ├─────────────────┤
+│ FK: car_id    │◄────────────────────┘              │ PK: id (UUID)   │
+│    service_na │                                    │    date         │
+│    scheduled_ │                                    │    start_time   │
+│    status     │                                    │    end_time     │
+│    descriptio │                                    │    max_bookings │
+│    work_hours │                                    │    curr_booking │
+│    cost_per_h │                                    │    is_available │
+│    parts_cost │                                    │    created_at   │
+│    parts_used │                                    │    updated_at   │
+│    final_pric │                                    └────────┬────────┘
+│    margin     │                                             │
+│    recommenda │                                             │ 1:N
+│    mileage_at │                                             │
+│    next_rev   │                                             ▼
+│    created_at │                                    ┌─────────────────┐
+│    updated_at │                                    │ quote_requests  │
+└───────────────┘                                    ├─────────────────┤
+                                                     │ PK: id (UUID)   │
+                                                     │ FK: user_id     │
+                                                     │ FK: slot_id     │
+                                                     │    client_name  │
+                                                     │    client_phone │
+                                                     │    message      │
+                                                     │    pref_date    │
+                                                     │    pref_time    │
+                                                     │    status       │
+                                                     │    created_at   │
+                                                     │    updated_at   │
+                                                     └─────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ LEGENDA:                                                                     │
+│   PK = Primary Key (Chave Primária)                                         │
+│   FK = Foreign Key (Chave Estrangeira)                                      │
+│   ─▶ = Relação (seta aponta para a tabela referenciada)                     │
+│   1:1 = Relação um para um                                                  │
+│   1:N = Relação um para muitos                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 4.2.2. Descrição das Tabelas
+### 4.2.2. Descrição das Relações
+
+**profiles ↔ auth.users (1:1):**
+Cada utilizador autenticado tem exatamente um perfil. O campo `id` em `profiles` referencia diretamente o `id` do utilizador em `auth.users`.
+
+**profiles ↔ user_roles (1:1):**
+Cada perfil tem exatamente um papel (role) atribuído, que pode ser "admin" ou "client".
+
+**profiles ↔ cars (1:N):**
+Um cliente pode ter múltiplos veículos registados. Cada veículo pertence a exatamente um proprietário.
+
+**cars ↔ services (1:N):**
+Um veículo pode ter múltiplos serviços associados. Cada serviço está associado a exatamente um veículo.
+
+**profiles ↔ quote_requests (1:N):**
+Um cliente pode fazer múltiplos pedidos de orçamento. Cada pedido pertence a exatamente um cliente.
+
+**availability_slots ↔ quote_requests (1:N):**
+Um slot de disponibilidade pode ter múltiplos pedidos de orçamento associados (opcional).
+
+### 4.2.3. Descrição das Tabelas
 
 **Tabela profiles:**
 | Campo | Tipo | Descrição |
@@ -991,7 +1043,7 @@ Foram analisadas soluções existentes no mercado:
 | parts_cost | DECIMAL | Custo de peças |
 | parts_used | TEXT | Peças utilizadas |
 | final_price | DECIMAL | Preço final |
-| margin | DECIMAL | Margem de lucro |
+| margin | DECIMAL | Margem de lucro (calculada) |
 | recommendations | TEXT | Recomendações |
 | mileage_at_service | INTEGER | Quilometragem no serviço |
 | next_revision_date | DATE | Data próxima revisão |
@@ -1056,7 +1108,185 @@ Foram analisadas soluções existentes no mercado:
 
 ## 4.3. Modelação do Software
 
-### 4.3.1. Estrutura de Componentes
+### 4.3.1. Diagrama de Navegação
+
+O diagrama seguinte mostra o fluxo de navegação da aplicação:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        DIAGRAMA DE NAVEGAÇÃO                                 │
+│                           Maslov Motors                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                              ┌─────────────┐
+                              │   Landing   │
+                              │    Page     │
+                              └──────┬──────┘
+                                     │
+                    ┌────────────────┼────────────────┐
+                    │                │                │
+                    ▼                ▼                ▼
+            ┌───────────┐    ┌───────────┐    ┌───────────┐
+            │   Login   │    │  Registo  │    │  Chatbot  │
+            └─────┬─────┘    └─────┬─────┘    │  (Global) │
+                  │                │          └───────────┘
+                  └────────┬───────┘
+                           │
+                           ▼
+                  ┌────────────────┐
+                  │  Verificar     │
+                  │    Role        │
+                  └───────┬────────┘
+                          │
+           ┌──────────────┴──────────────┐
+           │                             │
+           ▼                             ▼
+┌──────────────────┐          ┌──────────────────┐
+│    CLIENTE       │          │  ADMINISTRADOR   │
+│   Dashboard      │          │    Dashboard     │
+├──────────────────┤          ├──────────────────┤
+│                  │          │                  │
+│ ┌──────────────┐ │          │ ┌──────────────┐ │
+│ │ Meus Carros  │ │          │ │  Clientes    │ │
+│ │  - Adicionar │ │          │ │  - Listar    │ │
+│ │  - Ver Lista │ │          │ │  - Adicionar │ │
+│ │  - Histórico │ │          │ │  - Editar    │ │
+│ └──────────────┘ │          │ │  - Eliminar  │ │
+│                  │          │ │  - Password  │ │
+│ ┌──────────────┐ │          │ └──────────────┘ │
+│ │  Orçamentos  │ │          │                  │
+│ │  - Pedir     │ │          │ ┌──────────────┐ │
+│ │  - Ver       │ │          │ │   Carros     │ │
+│ └──────────────┘ │          │ │  - Listar    │ │
+│                  │          │ │  - Adicionar │ │
+│ ┌──────────────┐ │          │ │  - Editar    │ │
+│ │  Marcações   │ │          │ │  - Eliminar  │ │
+│ │  - Agendar   │ │          │ │  - Marcas    │ │
+│ └──────────────┘ │          │ └──────────────┘ │
+│                  │          │                  │
+│ ┌──────────────┐ │          │ ┌──────────────┐ │
+│ │ Definições ⚙ │ │          │ │  Serviços    │ │
+│ │  - Perfil    │ │          │ │  - Listar    │ │
+│ │  - Password  │ │          │ │  - Criar     │ │
+│ │  - Eliminar  │ │          │ │  - Editar    │ │
+│ │    Conta     │ │          │ │  - Estados   │ │
+│ └──────────────┘ │          │ │  - Tipos     │ │
+│                  │          │ └──────────────┘ │
+└──────────────────┘          │                  │
+                              │ ┌──────────────┐ │
+                              │ │ Orçamentos   │ │
+                              │ │  - Listar    │ │
+                              │ │  - Estados   │ │
+                              │ │  - Converter │ │
+                              │ └──────────────┘ │
+                              │                  │
+                              │ ┌──────────────┐ │
+                              │ │ Relatórios   │ │
+                              │ │  - Mensal    │ │
+                              │ │  - Anual     │ │
+                              │ │  - Gráficos  │ │
+                              │ └──────────────┘ │
+                              │                  │
+                              └──────────────────┘
+```
+
+### 4.3.2. Fluxo de Eliminação de Conta
+
+O diagrama seguinte ilustra o processo seguro de eliminação de conta do utilizador:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     FLUXO DE ELIMINAÇÃO DE CONTA                             │
+│                           Maslov Motors                                      │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    Cliente                  Frontend               Edge Function           Database
+       │                        │                        │                      │
+       │  1. Clica "Eliminar    │                        │                      │
+       │     Conta"             │                        │                      │
+       │───────────────────────▶│                        │                      │
+       │                        │                        │                      │
+       │  2. Abre diálogo de    │                        │                      │
+       │     confirmação        │                        │                      │
+       │◀───────────────────────│                        │                      │
+       │                        │                        │                      │
+       │  3. Confirma           │                        │                      │
+       │     eliminação         │                        │                      │
+       │───────────────────────▶│                        │                      │
+       │                        │                        │                      │
+       │                        │  4. POST /delete-user  │                      │
+       │                        │     + Auth Token       │                      │
+       │                        │───────────────────────▶│                      │
+       │                        │                        │                      │
+       │                        │                        │  5. Verificar        │
+       │                        │                        │     Auth Token       │
+       │                        │                        │─────────────────────▶│
+       │                        │                        │                      │
+       │                        │                        │  6. Obter user_id    │
+       │                        │                        │◀─────────────────────│
+       │                        │                        │                      │
+       │                        │                        │  7. Verificar        │
+       │                        │                        │     permissões       │
+       │                        │                        │     (não é admin     │
+       │                        │                        │     a eliminar       │
+       │                        │                        │     outro user)      │
+       │                        │                        │                      │
+       │                        │                        │  8. DELETE FROM      │
+       │                        │                        │     quote_requests   │
+       │                        │                        │─────────────────────▶│
+       │                        │                        │                      │
+       │                        │                        │  9. DELETE FROM      │
+       │                        │                        │     services         │
+       │                        │                        │     (via cars)       │
+       │                        │                        │─────────────────────▶│
+       │                        │                        │                      │
+       │                        │                        │  10. DELETE FROM     │
+       │                        │                        │      cars            │
+       │                        │                        │─────────────────────▶│
+       │                        │                        │                      │
+       │                        │                        │  11. DELETE FROM     │
+       │                        │                        │      user_roles      │
+       │                        │                        │─────────────────────▶│
+       │                        │                        │                      │
+       │                        │                        │  12. DELETE FROM     │
+       │                        │                        │      profiles        │
+       │                        │                        │─────────────────────▶│
+       │                        │                        │                      │
+       │                        │                        │  13. DELETE FROM     │
+       │                        │                        │      auth.users      │
+       │                        │                        │─────────────────────▶│
+       │                        │                        │                      │
+       │                        │  14. Sucesso           │                      │
+       │                        │◀───────────────────────│                      │
+       │                        │                        │                      │
+       │  15. Logout +          │                        │                      │
+       │      Redirect          │                        │                      │
+       │◀───────────────────────│                        │                      │
+       │                        │                        │                      │
+       │  16. Mostra página     │                        │                      │
+       │      inicial           │                        │                      │
+       │◀ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │                        │                      │
+       │                        │                        │                      │
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ NOTAS IMPORTANTES:                                                           │
+│                                                                              │
+│ • A eliminação é PERMANENTE e IRREVERSÍVEL                                  │
+│ • Todos os dados associados são eliminados em cascata:                       │
+│   - Pedidos de orçamento                                                     │
+│   - Serviços dos carros do utilizador                                        │
+│   - Carros registados                                                        │
+│   - Papel (role) do utilizador                                               │
+│   - Perfil                                                                   │
+│   - Conta de autenticação                                                    │
+│ • A operação usa Edge Function por segurança (SECURITY DEFINER)             │
+│ • Requer autenticação válida                                                 │
+│ • Administradores não podem eliminar contas de outros utilizadores          │
+│   através desta funcionalidade                                               │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 4.3.3. Estrutura de Componentes
 
 ```
 src/
@@ -1113,7 +1343,7 @@ src/
 └── main.tsx                     # Ponto de entrada
 ```
 
-### 4.3.2. Fluxo de Autenticação
+### 4.3.4. Fluxo de Autenticação
 
 ```
 ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
@@ -1182,10 +1412,21 @@ src/
 
 ### 4.5.2. Políticas RLS
 
-Todas as tabelas têm políticas RLS que garantem:
-- Utilizadores só acedem aos seus dados
-- Administradores têm acesso completo
-- Operações de escrita são validadas
+Cada tabela tem políticas de segurança específicas:
+
+**profiles:**
+- Utilizadores veem apenas o seu próprio perfil
+- Administradores veem todos os perfis
+- Utilizadores podem atualizar o seu próprio perfil
+
+**cars:**
+- Utilizadores veem apenas os seus carros
+- Administradores veem todos os carros
+- Utilizadores podem adicionar carros próprios
+
+**services:**
+- Utilizadores veem serviços dos seus carros
+- Administradores gerem todos os serviços
 
 ---
 
@@ -1193,10 +1434,24 @@ Todas as tabelas têm políticas RLS que garantem:
 
 ## 5.1. Ambiente de Desenvolvimento
 
-### 5.1.1. Ferramentas Utilizadas
+### 5.1.1. Stack Tecnológica (Versões)
 
-| Ferramenta | Versão | Propósito |
+| Tecnologia | Versão | Propósito |
 |------------|--------|-----------|
+| React | ^18.3.1 | Framework frontend |
+| TypeScript | ~5.6.2 | Tipagem estática |
+| Vite | ^5.4.1 | Build tool |
+| Tailwind CSS | ^3.4.11 | Framework CSS |
+| Supabase JS | ^2.79.0 | Cliente backend |
+| React Router | ^6.30.1 | Navegação e routing |
+| React Query | ^5.83.0 | Gestão de estado servidor |
+| React Hook Form | ^7.61.1 | Gestão de formulários |
+| Zod | ^3.25.76 | Validação de dados |
+| Recharts | ^2.15.4 | Gráficos e visualizações |
+| Date-fns | ^3.6.0 | Manipulação de datas |
+| Lucide React | ^0.462.0 | Ícones |
+| Sonner | ^1.7.4 | Notificações toast |
+| Tailwind Animate | ^1.0.7 | Animações CSS |
 | Lovable | - | Plataforma de desenvolvimento |
 | VS Code | 1.85+ | Editor de código |
 | Git | 2.40+ | Controlo de versões |
@@ -1539,12 +1794,23 @@ Todas as funcionalidades planeadas foram implementadas com sucesso:
 5. **Usabilidade:** Interface intuitiva para diferentes perfis
 6. **Gestão de conta:** Cliente tem controlo total sobre os seus dados
 
-### 7.2.2. Pontos a Melhorar
+### 7.2.2. Funcionalidades Priorizadas vs. Diferidas
 
-1. **Testes automatizados:** Implementar suite de testes unitários
-2. **Internacionalização:** Suporte a múltiplos idiomas
-3. **Modo offline:** Funcionalidade básica sem conexão
-4. **Notificações:** Sistema de alertas push
+Seguindo a metodologia ágil adotada, foi necessário priorizar as funcionalidades core para garantir um Produto Mínimo Viável (MVP) estável e funcional para o cliente real. Esta abordagem permitiu entregar valor mais rapidamente e validar as funcionalidades essenciais antes de investir em features complementares.
+
+**Funcionalidades implementadas no MVP (Prioridade Alta):**
+- Sistema completo de autenticação e gestão de conta
+- Gestão de veículos e serviços
+- Dashboard com estatísticas e relatórios
+- Chatbot com IA
+- Sistema de agendamentos e orçamentos
+
+**Funcionalidades identificadas para iterações futuras (Prioridade Menor):**
+- **Lembretes Automáticos:** A implementação de notificações push/email para lembrar clientes de revisões agendadas ou manutenções pendentes foi identificada como uma melhoria valiosa, mas foi diferida para uma fase posterior. Esta decisão permitiu focar recursos no desenvolvimento das funcionalidades core que proporcionam valor imediato ao utilizador. A arquitetura atual já suporta a adição desta funcionalidade através de Edge Functions e serviços de email.
+- **Modo escuro:** Feature de conveniência, não essencial para o funcionamento
+- **Exportação PDF:** Complemento útil aos relatórios existentes
+
+Esta priorização alinha-se com os princípios ágeis de entregar valor incrementalmente e responder a feedback real de utilizadores.
 
 ### 7.2.3. Lições Aprendidas
 
@@ -1553,6 +1819,7 @@ Todas as funcionalidades planeadas foram implementadas com sucesso:
 - Necessidade de documentação desde o início
 - Benefícios da utilização de ferramentas modernas
 - Importância das animações na experiência do utilizador
+- Priorização eficaz permite entregar MVP robusto
 
 ## 7.3. Avaliação do Produto
 
@@ -1593,7 +1860,7 @@ O desenvolvimento do projeto "Maslov Motors" foi concluído com sucesso, cumprin
 
 A aplicação demonstra que é possível criar soluções profissionais utilizando tecnologias modernas como React, TypeScript e Lovable Cloud. A integração de inteligência artificial através do chatbot e a implementação de animações modernas acrescenta valor diferenciador à solução.
 
-O projeto permitiu consolidar conhecimentos técnicos adquiridos durante o curso, nomeadamente em desenvolvimento web, bases de dados, segurança informática e design de interfaces. A metodologia iterativa adotada provou ser eficaz para o desenvolvimento individual.
+O projeto permitiu consolidar conhecimentos técnicos adquiridos durante o curso, nomeadamente em desenvolvimento web, bases de dados, segurança informática e design de interfaces. A metodologia iterativa adotada provou ser eficaz para o desenvolvimento individual, permitindo priorizar funcionalidades core e entregar um MVP robusto.
 
 A inclusão de funcionalidades de gestão de conta (edição de perfil, alteração de palavra-passe e eliminação de conta) demonstra preocupação com a autonomia do utilizador e conformidade com boas práticas de proteção de dados.
 
@@ -1612,7 +1879,7 @@ As animações e transições implementadas contribuem significativamente para u
 
 1. **Sem modo offline:** Requer conexão à internet
 2. **Idioma único:** Apenas português
-3. **Sem notificações push:** Lembretes manuais
+3. **Sem notificações push:** Lembretes manuais (funcionalidade diferida para iteração futura)
 4. **Sem app mobile nativa:** Apenas web responsiva
 
 ## 8.3. Melhorias Futuras
@@ -1626,8 +1893,8 @@ As animações e transições implementadas contribuem significativamente para u
 
 ### 8.3.2. Médio Prazo
 
-1. **App mobile:** React Native ou PWA avançada
-2. **Notificações:** Sistema de alertas
+1. **Lembretes automáticos:** Notificações email/push para manutenções
+2. **App mobile:** React Native ou PWA avançada
 3. **Multi-idioma:** Internacionalização
 4. **Integração pagamentos:** Sistema de faturação
 
@@ -1683,44 +1950,125 @@ As animações e transições implementadas contribuem significativamente para u
 
 # X. ANEXOS
 
-## Anexo A - Manual de Utilizador
+## Anexo A - Capturas de Ecrã da Aplicação
 
-O manual completo de utilizador encontra-se no ficheiro separado:
-**docs/MANUAL_UTILIZADOR_MASLOV_MOTORS.md**
+As figuras seguintes apresentam as principais interfaces da aplicação Maslov Motors.
 
-## Anexo B - Código Fonte
+### A.1. Landing Page
 
-O código fonte completo está disponível no repositório do projeto, organizado conforme a estrutura de diretórios apresentada no Capítulo IV.
+**Figura 16: Página inicial da aplicação com animações**
 
-### B.1. Principais Ficheiros
+[INSERIR SCREENSHOT: Landing page mostrando o hero section com gradientes, botões de ação "Começar Agora" e "Login", e as animações de entrada dos elementos]
 
-**src/hooks/useAuth.tsx** - Hook de autenticação
-**src/components/dashboard/ClientDashboard.tsx** - Dashboard do cliente
-**src/components/dashboard/AdminDashboard.tsx** - Dashboard do admin
-**src/components/dashboard/client/EditProfileDialog.tsx** - Edição de perfil
-**src/components/chat/ChatBot.tsx** - Componente do chatbot
-**supabase/functions/chat-assistant/index.ts** - Edge function do chatbot
-**supabase/functions/delete-user/index.ts** - Edge function para eliminar conta
-**supabase/functions/update-password/index.ts** - Edge function para alterar password
+Descrição: A página inicial apresenta um design moderno com gradientes em azul, animações fade-in nos textos e botões com efeitos de hover. O chatbot está acessível através do ícone no canto inferior direito.
 
-## Anexo C - Screenshots da Aplicação
+---
 
-(Inserir screenshots aqui quando disponíveis)
+### A.2. Página de Autenticação
 
-- C.1. Página inicial (Landing Page)
-- C.2. Página de autenticação
-- C.3. Dashboard do cliente
-- C.4. Dashboard do administrador
-- C.5. Gestão de veículos
-- C.6. Gestão de serviços
-- C.7. Chatbot
-- C.8. Relatórios
-- C.9. Edição de perfil
-- C.10. Animações e transições
+**Figura 17: Ecrã de login e registo**
 
-## Anexo D - Diagramas
+[INSERIR SCREENSHOT: Página de autenticação mostrando as tabs "Entrar" e "Criar Conta", os campos de formulário (email, password, nome, apelido, telemóvel) e o botão de submit]
 
-### D.1. Diagrama de Classes Simplificado
+Descrição: A página de autenticação oferece duas tabs: uma para login de utilizadores existentes e outra para criação de nova conta. O registo exige telemóvel obrigatório para contacto.
+
+---
+
+### A.3. Dashboard do Cliente
+
+**Figura 18: Dashboard do cliente com cards de estatísticas**
+
+[INSERIR SCREENSHOT: Dashboard mostrando os cards "Meus Carros", "Serviços Agendados", "Serviços Concluídos", "Total Serviços", os botões de ação rápida e a lista de veículos do cliente]
+
+Descrição: O dashboard do cliente apresenta estatísticas pessoais, ações rápidas para adicionar carro, fazer marcação ou pedir orçamento, e a lista dos seus veículos com opção de ver histórico de serviços.
+
+---
+
+### A.4. Histórico de Serviços
+
+**Figura 19: Timeline de serviços de um veículo**
+
+[INSERIR SCREENSHOT: Secção expandida de um veículo mostrando a timeline de serviços com estados coloridos (azul/amarelo/verde), datas, preços e descrições]
+
+Descrição: O histórico de serviços é apresentado numa timeline visual com códigos de cor para cada estado: azul (agendado), amarelo (em processo) e verde (concluído).
+
+---
+
+### A.5. Dashboard do Administrador
+
+**Figura 20: Dashboard administrativo com gráficos**
+
+[INSERIR SCREENSHOT: Dashboard do admin mostrando os gráficos de receita, custos e margem, as tabs de navegação (Clientes, Carros, Serviços, Orçamentos, Relatórios) e as estatísticas gerais]
+
+Descrição: O dashboard administrativo oferece uma visão completa do negócio com gráficos interativos de receita e margem, navegação por tabs para gestão de clientes, carros, serviços e orçamentos.
+
+---
+
+### A.6. Gestão de Clientes
+
+**Figura 21: Interface de gestão de clientes**
+
+[INSERIR SCREENSHOT: Tab de clientes mostrando a tabela com colunas Nome, Email, Telemóvel, Data de Registo, e os botões de ação (editar, alterar password, eliminar)]
+
+Descrição: A gestão de clientes permite visualizar todos os utilizadores registados, editar os seus dados, alterar passwords e eliminar contas quando necessário.
+
+---
+
+### A.7. Gestão de Serviços
+
+**Figura 22: Interface de gestão de serviços**
+
+[INSERIR SCREENSHOT: Tab de serviços mostrando a tabela com serviços, os filtros por estado, botão de criar novo serviço, e os indicadores de estado coloridos]
+
+Descrição: A gestão de serviços permite criar, editar e acompanhar todos os serviços. Os estados são facilmente identificáveis por cores e podem ser alterados diretamente na interface.
+
+---
+
+### A.8. Chatbot com IA
+
+**Figura 23: Interface do chatbot**
+
+[INSERIR SCREENSHOT: Janela do chatbot aberta mostrando uma conversa exemplo com perguntas do utilizador e respostas do assistente sobre serviços da oficina]
+
+Descrição: O chatbot oferece assistência 24/7 aos utilizadores, respondendo a perguntas sobre serviços, horários e funcionamento da oficina usando inteligência artificial.
+
+---
+
+### A.9. Edição de Perfil
+
+**Figura 24: Diálogo de edição de perfil e segurança**
+
+[INSERIR SCREENSHOT: Diálogo de definições mostrando as tabs "Dados Pessoais" e "Segurança", os campos editáveis e a zona de perigo com botão de eliminar conta]
+
+Descrição: Os clientes podem editar os seus dados pessoais, alterar a palavra-passe e, se desejarem, eliminar permanentemente a sua conta através deste diálogo.
+
+---
+
+### A.10. Relatórios e Estatísticas
+
+**Figura 25: Vista de relatórios com gráficos detalhados**
+
+[INSERIR SCREENSHOT: Tab de relatórios mostrando gráficos de evolução temporal, top clientes, distribuição de serviços por tipo, e métricas financeiras]
+
+Descrição: Os relatórios oferecem análises detalhadas do negócio com filtros temporais, permitindo visualizar a evolução de receitas, custos e margens ao longo do tempo.
+
+---
+
+## Anexo B - Diagramas Técnicos
+
+### B.1. Diagrama Entidade-Relacionamento
+
+Ver secção 4.2.1 para o diagrama ER completo com todas as tabelas e relações.
+
+### B.2. Diagrama de Navegação
+
+Ver secção 4.3.1 para o diagrama de navegação detalhado da aplicação.
+
+### B.3. Fluxo de Eliminação de Conta
+
+Ver secção 4.3.2 para o diagrama de sequência do processo de eliminação de conta.
+
+### B.4. Diagrama de Classes Simplificado
 
 ```
 ┌─────────────────┐
@@ -1763,7 +2111,7 @@ O código fonte completo está disponível no repositório do projeto, organizad
     └─────────┘
 ```
 
-### D.2. Diagrama de Sequência - Fluxo de Login
+### B.5. Diagrama de Sequência - Fluxo de Login
 
 ```
 Cliente          Frontend         Supabase Auth       Database
@@ -1781,7 +2129,302 @@ Cliente          Frontend         Supabase Auth       Database
 
 ---
 
-# FIM DO RELATÓRIO
+## Anexo C - Código Fonte
+
+O código fonte completo está disponível no repositório do projeto, organizado conforme a estrutura de diretórios apresentada no Capítulo IV.
+
+### C.1. Principais Ficheiros
+
+**src/hooks/useAuth.tsx** - Hook de autenticação
+**src/components/dashboard/ClientDashboard.tsx** - Dashboard do cliente
+**src/components/dashboard/AdminDashboard.tsx** - Dashboard do admin
+**src/components/dashboard/client/EditProfileDialog.tsx** - Edição de perfil
+**src/components/chat/ChatBot.tsx** - Componente do chatbot
+**supabase/functions/chat-assistant/index.ts** - Edge function do chatbot
+**supabase/functions/delete-user/index.ts** - Edge function para eliminar conta
+**supabase/functions/update-password/index.ts** - Edge function para alterar password
+
+---
+
+## Anexo D - Manual do Utilizador
+
+O Manual do Utilizador completo encontra-se incluído neste documento a partir da página seguinte.
+
+O manual fornece instruções detalhadas para:
+- Clientes: registo, login, gestão de veículos, pedidos de orçamento, marcações, utilização do chatbot, edição de perfil, alteração de password e eliminação de conta
+- Administradores: gestão de clientes, carros, serviços, orçamentos, tipos de serviços, marcas de carros e visualização de relatórios
+
+**Nota:** Para facilitar a consulta, o manual também está disponível como documento separado em `docs/MANUAL_UTILIZADOR_MASLOV_MOTORS.md`.
+
+---
+
+# MANUAL DO UTILIZADOR
+
+# Maslov Motors
+## Sistema de Gestão para Oficina Automóvel
+
+---
+
+**Versão:** 1.0  
+**Data:** Janeiro 2026  
+**Autor:** Danilo Dmitrievich Maslov
+
+---
+
+## ÍNDICE DO MANUAL
+
+1. Introdução
+2. Requisitos do Sistema
+3. Primeiros Passos
+   - 3.1. Criar Conta
+   - 3.2. Iniciar Sessão
+   - 3.3. Terminar Sessão
+4. Área do Cliente
+   - 4.1. Dashboard
+   - 4.2. Gerir Veículos
+   - 4.3. Ver Histórico de Serviços
+   - 4.4. Pedir Orçamento
+   - 4.5. Fazer Marcação
+   - 4.6. Usar o Chatbot
+   - 4.7. Editar Perfil
+   - 4.8. Alterar Palavra-passe
+   - 4.9. Eliminar Conta
+5. Área do Administrador
+   - 5.1. Dashboard e Estatísticas
+   - 5.2. Gerir Clientes
+   - 5.3. Gerir Carros
+   - 5.4. Gerir Serviços
+   - 5.5. Gerir Pedidos de Orçamento
+   - 5.6. Gerir Tipos de Serviços
+   - 5.7. Gerir Marcas de Carros
+   - 5.8. Relatórios
+6. Perguntas Frequentes
+7. Resolução de Problemas
+8. Contactos e Suporte
+
+---
+
+## 1. INTRODUÇÃO
+
+### Sobre a Aplicação
+
+O **Maslov Motors** é uma aplicação web desenvolvida para facilitar a gestão de uma oficina automóvel. A aplicação permite que clientes registem os seus veículos, consultem o histórico de serviços, peçam orçamentos e façam marcações. Os administradores podem gerir clientes, veículos, serviços e visualizar relatórios financeiros.
+
+### Principais Funcionalidades
+
+**Para Clientes:**
+- ✅ Registo de veículos
+- ✅ Visualização do histórico de serviços
+- ✅ Pedidos de orçamento
+- ✅ Marcação de serviços
+- ✅ Chatbot de assistência
+- ✅ Edição de perfil
+- ✅ Alteração de palavra-passe
+- ✅ Eliminação de conta
+
+**Para Administradores:**
+- ✅ Gestão completa de clientes
+- ✅ Gestão de veículos
+- ✅ Criação e gestão de serviços
+- ✅ Controlo de custos e margens
+- ✅ Relatórios estatísticos
+- ✅ Gestão de tipos de serviços
+- ✅ Gestão de marcas de carros
+
+---
+
+## 2. REQUISITOS DO SISTEMA
+
+### Navegadores Suportados
+
+| Navegador | Versão Mínima |
+|-----------|---------------|
+| Google Chrome | 90+ |
+| Mozilla Firefox | 88+ |
+| Microsoft Edge | 90+ |
+| Safari | 14+ |
+
+### Requisitos
+
+- Conexão à internet
+- JavaScript ativado
+- Cookies ativados
+- Resolução mínima: 320px (mobile)
+
+### URL de Acesso
+
+**Aplicação:** https://maslov-motors.lovable.app
+
+---
+
+## 3. PRIMEIROS PASSOS
+
+### 3.1. Criar Conta
+
+Para utilizar a aplicação como cliente, é necessário criar uma conta:
+
+**Passo a Passo:**
+
+1. Aceder à aplicação em https://maslov-motors.lovable.app
+2. Clicar em "Começar Agora" ou "Login"
+3. Selecionar a aba "Criar Conta"
+4. Preencher os dados:
+   - Nome (obrigatório)
+   - Apelido (obrigatório)
+   - Email (obrigatório)
+   - Telemóvel (obrigatório)
+   - Palavra-passe (mínimo 6 caracteres)
+5. Clicar em "Criar Conta"
+
+### 3.2. Iniciar Sessão
+
+1. Aceder à aplicação
+2. Clicar em "Login"
+3. Preencher email e palavra-passe
+4. Clicar em "Entrar"
+
+### 3.3. Terminar Sessão
+
+1. No dashboard, clicar no botão "Sair" no canto superior direito
+2. Será redirecionado para a página inicial
+
+---
+
+## 4. ÁREA DO CLIENTE
+
+### 4.1. Dashboard
+
+O dashboard é a página principal após iniciar sessão, contendo:
+- Cards com estatísticas (carros, serviços agendados/concluídos)
+- Botões de ação rápida (Adicionar Carro, Fazer Marcação, Pedir Orçamento)
+- Lista de veículos registados
+- Botão de Definições (⚙️) para edição de perfil
+
+### 4.2. Gerir Veículos
+
+Para adicionar um veículo:
+1. Clicar em "Adicionar Carro"
+2. Preencher marca, modelo, matrícula, ano, cor e quilometragem
+3. Clicar em "Adicionar Carro"
+
+### 4.3. Ver Histórico de Serviços
+
+Para cada veículo, clicar em "Ver Histórico" para ver a timeline de serviços com estados coloridos.
+
+### 4.4. Pedir Orçamento
+
+1. Clicar em "Pedir Orçamento"
+2. Preencher data preferida, hora e descrição do serviço pretendido
+3. Clicar em "Enviar Pedido"
+
+### 4.5. Fazer Marcação
+
+1. Clicar em "Fazer Marcação"
+2. Selecionar data e hora disponíveis
+3. Descrever o motivo da marcação
+4. Clicar em "Fazer Marcação"
+
+### 4.6. Usar o Chatbot
+
+1. Clicar no ícone 💬 no canto inferior direito
+2. Digitar a pergunta e pressionar Enter
+3. Aguardar resposta do assistente
+
+### 4.7. Editar Perfil
+
+1. Clicar no ícone ⚙️ (Definições)
+2. Editar os campos desejados na aba "Dados Pessoais"
+3. Clicar em "Guardar Alterações"
+
+### 4.8. Alterar Palavra-passe
+
+1. Clicar no ícone ⚙️ (Definições)
+2. Selecionar a aba "Segurança"
+3. Preencher palavra-passe atual e nova palavra-passe
+4. Clicar em "Alterar Palavra-passe"
+
+### 4.9. Eliminar Conta
+
+⚠️ **ATENÇÃO: Esta ação é PERMANENTE e IRREVERSÍVEL!**
+
+1. Clicar no ícone ⚙️ (Definições)
+2. Selecionar a aba "Segurança"
+3. Na "Zona de Perigo", clicar em "Eliminar Conta Permanentemente"
+4. Confirmar a eliminação
+
+---
+
+## 5. ÁREA DO ADMINISTRADOR
+
+### 5.1. Dashboard e Estatísticas
+
+Gráficos interativos de serviços, receitas, custos e margens.
+
+### 5.2. Gerir Clientes
+
+Adicionar, editar, alterar password e eliminar clientes.
+
+### 5.3. Gerir Carros
+
+Adicionar e editar veículos, gerir marcas personalizadas.
+
+### 5.4. Gerir Serviços
+
+Criar, editar e alterar estados de serviços. Gerir tipos de serviços personalizados.
+
+### 5.5. Gerir Pedidos de Orçamento
+
+Visualizar e gerir estados de pedidos de orçamento.
+
+### 5.6. Gerir Tipos de Serviços
+
+Adicionar tipos de serviço com descrições e peças padrão.
+
+### 5.7. Gerir Marcas de Carros
+
+Adicionar marcas e modelos personalizados.
+
+### 5.8. Relatórios
+
+Visualizar estatísticas mensais e anuais com gráficos detalhados.
+
+---
+
+## 6. PERGUNTAS FREQUENTES
+
+**P: Esqueci a minha palavra-passe. O que faço?**
+R: Contacte a oficina para recuperação de acesso.
+
+**P: Posso ter mais do que um carro registado?**
+R: Sim, pode registar quantos carros desejar.
+
+**P: Como sei o estado do meu serviço?**
+R: No histórico do veículo, os estados são indicados por cores.
+
+---
+
+## 7. RESOLUÇÃO DE PROBLEMAS
+
+**Página não carrega:**
+- Verificar conexão à internet
+- Limpar cache do navegador
+- Tentar outro navegador
+
+**Não consigo fazer login:**
+- Verificar email e password
+- Verificar caps lock
+
+---
+
+## 8. CONTACTOS E SUPORTE
+
+**Aplicação:** https://maslov-motors.lovable.app
+**Email:** suporte@maslovmotors.pt
+**Chatbot:** Disponível 24/7 na aplicação
+
+---
+
+# FIM DO RELATÓRIO E MANUAL
 
 ---
 
@@ -1794,3 +2437,18 @@ Cliente          Frontend         Supabase Auth       Database
 **Ano Letivo:** 2025/2026
 
 **Data:** Janeiro 2026
+
+---
+
+## NOTAS FINAIS PARA FORMATAÇÃO WORD
+
+Antes de entregar, certifique-se de:
+
+1. ✅ Inserir os logotipos da escola e do projeto na capa e página de rosto
+2. ✅ Inserir as capturas de ecrã reais no Anexo A (onde indicado [INSERIR SCREENSHOT])
+3. ✅ Configurar cabeçalho: "Maslov Motors - Sistema de Gestão para Oficina Automóvel" (alinhado à direita, tamanho 8)
+4. ✅ Configurar rodapé: Número de página centrado
+5. ✅ Remover cabeçalho/rodapé da capa
+6. ✅ Aplicar todos os estilos conforme instruções no início do documento
+7. ✅ Verificar quebras de página antes de cada capítulo
+8. ✅ Gerar índice automático no Word após aplicar estilos de título
