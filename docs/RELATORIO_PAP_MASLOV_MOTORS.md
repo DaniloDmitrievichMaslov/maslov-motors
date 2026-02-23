@@ -336,7 +336,7 @@ O desenvolvimento do projeto seguiu uma metodologia iterativa e incremental, ins
 
 **Fase 6 - Testes e Refinamento (2 semanas)**
 - Testes funcionais
-- Correção de bugs
+- Correção de bugs (ver Log de Erros e Soluções na secção 6.6)
 - Otimização de desempenho
 - Documentação
 
@@ -830,6 +830,8 @@ O sistema deve permitir:
 ## 4.1. Arquitetura Geral
 
 ### 4.1.1. Diagrama de Arquitetura
+
+**NOTA IMPORTANTE PARA A VERSÃO FINAL:** O diagrama abaixo está representado em formato texto (ASCII) para fins de documentação. Para a entrega final do relatório, este diagrama **deve ser recriado** utilizando uma ferramenta gráfica como o **Draw.io** (https://draw.io) ou **Figma**, seguindo a paleta de cores da aplicação (azul primário: hsl(217, 71%, 55%), dourado accent: hsl(41, 100%, 55%), fundo escuro: hsl(217, 91%, 8%)). O mesmo aplica-se a **todos os diagramas** neste relatório (ER, navegação, casos de uso, sequência, etc.).
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -1607,24 +1609,72 @@ const { data: cars, isLoading } = useQuery({
 
 ## 5.5. Integração de APIs Externas
 
-### 5.5.1. Chatbot com IA
+### 5.5.1. Chatbot com IA — Configuração Detalhada
 
-O chatbot integra com modelos de IA suportados pela Lovable:
+O chatbot é uma das funcionalidades mais diferenciadores do projeto. A sua implementação envolve uma Edge Function (`chat-assistant/index.ts`) que atua como intermediário entre o frontend e a API de IA da Lovable, garantindo segurança e controlo total sobre o comportamento do assistente.
+
+#### Arquitetura da Integração
+
+O fluxo de comunicação segue esta sequência:
+
+1. **Frontend (ChatBot.tsx):** O utilizador envia uma mensagem através do componente de chat. O componente envia toda a conversa (histórico de mensagens) para a Edge Function via `fetch` com streaming ativado.
+2. **Edge Function (chat-assistant/index.ts):** Recebe as mensagens, injeta o **System Prompt** como primeira mensagem, e reencaminha tudo para a API de IA (`ai.gateway.lovable.dev`). A chave de API (`LOVABLE_API_KEY`) é armazenada como segredo no servidor e nunca exposta ao cliente.
+3. **API de IA:** Processa a mensagem e devolve a resposta em modo streaming (Server-Sent Events), permitindo que o utilizador veja a resposta a ser gerada em tempo real, caracter a caracter.
+
+#### Design do System Prompt
+
+O aspeto mais crítico da configuração do chatbot é o **System Prompt** — a instrução inicial que define o comportamento, o tom e os limites do assistente. Este prompt foi cuidadosamente desenhado para garantir que a IA responde **exclusivamente** a temas relacionados com a oficina automóvel:
 
 ```typescript
-// Edge Function - chat-assistant
-const response = await fetch('https://api.lovable.ai/chat', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    model: 'openai/gpt-4o-mini',
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userMessage }
-    ]
-  })
-})
+const systemPrompt = `Tu és um assistente virtual de uma oficina automóvel. O teu papel é:
+- Responder a dúvidas sobre serviços de manutenção e reparação de veículos
+- Ajudar os clientes a entender o histórico de serviços dos seus carros
+- Explicar termos técnicos de forma simples
+- Aconselhar sobre manutenção preventiva e intervalos de revisão
+- Informar sobre tipos de serviços disponíveis (mudança de óleo, travões, pneus, etc.)
+
+Sê sempre simpático, profissional e conciso nas respostas. Responde sempre em português de Portugal.
+Se não souberes responder a algo específico sobre um carro do cliente, sugere que contactem a oficina diretamente.`;
 ```
+
+**Decisões de design do System Prompt:**
+
+| Decisão | Justificação |
+|---------|-------------|
+| "Tu és um assistente virtual de uma oficina automóvel" | Define o papel e limita o âmbito — a IA não responde a temas fora do contexto automóvel |
+| "Responde sempre em português de Portugal" | Garante coerência linguística com o público-alvo |
+| "Sê sempre simpático, profissional e conciso" | Define o tom adequado para comunicação B2C |
+| "Explicar termos técnicos de forma simples" | Adapta a linguagem ao público não técnico (proprietários de carros) |
+| "Se não souberes (...) sugere que contactem a oficina" | Cria um guardrail para evitar respostas incorretas sobre dados específicos de clientes |
+
+#### Modelo de IA Utilizado
+
+O modelo selecionado foi o `google/gemini-2.5-flash`, escolhido pelo equilíbrio entre velocidade de resposta, qualidade e custo. Este modelo oferece bom desempenho em tarefas de conversação, suporta streaming, e é suficientemente capaz para responder a dúvidas técnicas sobre automóveis sem a latência ou custo de modelos mais pesados.
+
+#### Tratamento de Erros e Limites
+
+A Edge Function implementa tratamento robusto de erros:
+
+- **HTTP 429 (Rate Limit):** Informa o utilizador que excedeu o limite de pedidos
+- **HTTP 402 (Créditos):** Alerta sobre créditos insuficientes
+- **Outros erros:** Mensagem genérica sem expor detalhes internos
+
+#### Streaming de Respostas
+
+O frontend implementa parsing de Server-Sent Events (SSE) para mostrar a resposta em tempo real. Cada chunk de dados é processado, o conteúdo extraído do JSON, e o estado da mensagem atualizado incrementalmente — criando o efeito de "digitação" que melhora a experiência do utilizador.
+
+```typescript
+// Exemplo simplificado do parsing SSE no frontend
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  // Processar cada linha do stream
+  // Extrair content de parsed.choices[0].delta.content
+  // Atualizar mensagem incrementalmente
+}
+```
+
+Esta abordagem de configuração detalhada do System Prompt e da arquitetura de streaming demonstra que a integração de IA não se limita a "colar uma API", mas envolve decisões técnicas conscientes sobre comportamento, segurança e experiência de utilizador.
 
 ## 5.6. Versionamento e Deploy
 
@@ -1751,6 +1801,32 @@ Foram realizados testes com utilizadores potenciais:
 - Notificações push
 - App mobile nativa
 
+## 6.6. Log de Erros e Soluções
+
+Durante a Fase 6 (Testes e Refinamento), foram identificados e resolvidos diversos problemas técnicos. A tabela seguinte documenta os erros mais significativos, as suas causas e as soluções aplicadas, evidenciando o processo de depuração e aprendizagem ao longo do desenvolvimento.
+
+| # | Erro / Problema | Causa Raiz | Solução Aplicada | Fonte Consultada |
+|---|-----------------|------------|------------------|------------------|
+| 1 | **Recursão infinita nas políticas RLS** — Ao aceder à tabela `user_roles` para verificar se o utilizador era admin, as políticas de SELECT da própria tabela tentavam novamente verificar o role, criando um loop infinito. | As políticas RLS da tabela `user_roles` referenciavam a própria tabela para verificar permissões. | Criação de uma função `has_role()` com `SECURITY DEFINER`, que executa com privilégios elevados e contorna as políticas RLS, quebrando o ciclo de recursão (Referência 4 — Supabase Docs: RLS Guide). | Supabase Documentation — Row Level Security |
+| 2 | **Estado de carregamento inconsistente** — Ao navegar entre tabs no dashboard admin, os dados apareciam momentaneamente vazios antes de serem carregados, causando "flickering". | O React Query invalidava o cache ao mudar de tab, e o componente renderizava sem dados durante o refetch. | Utilização da opção `staleTime` no React Query para manter os dados em cache durante a navegação entre tabs, evitando refetches desnecessários (Referência TanStack Query). | TanStack React Query Documentation |
+| 3 | **Validação de telemóvel português rejeitava formatos válidos** — Números com prefixo `+351` ou espaços eram rejeitados pelo schema de validação. | A expressão regular do Zod era demasiado restritiva, não contemplando o prefixo internacional nem espaços. | Atualização do regex no schema Zod para `^\+?[0-9\s]{9,20}$`, aceitando prefixo `+`, espaços e comprimento variável. O Zod permite definir regex personalizados com mensagens de erro claras (Referência Zod Documentation). | Zod Documentation — String Validation |
+| 4 | **Edge Function de eliminação de conta falhava silenciosamente** — A conta não era eliminada, mas nenhum erro era mostrado ao utilizador. | A Edge Function não tratava corretamente o caso em que o `user_id` era inválido (UUID mal formatado), retornando 200 sem executar a operação. | Adição de validação explícita do UUID no início da Edge Function e retorno de erro HTTP 400 com mensagem descritiva quando o formato é inválido. | Supabase Documentation — Edge Functions |
+| 5 | **Chatbot não respondia após múltiplas mensagens** — Após ~10 mensagens na conversa, o chatbot deixava de responder e apresentava erro de timeout. | O histórico completo de mensagens era enviado a cada pedido, ultrapassando os limites de tokens do modelo de IA. | Implementação de filtragem do histórico para enviar apenas as mensagens relevantes (excluindo a mensagem de boas-vindas), reduzindo o payload significativamente. | Lovable AI Gateway Documentation |
+| 6 | **Cálculo de margem de lucro incorreto** — A margem mostrava valores negativos quando o custo de peças era zero. | A fórmula de cálculo dividia por zero quando `parts_cost` era `0` ou `null`. | Adição de verificação `if (parts_cost + laborCost > 0)` antes do cálculo, retornando `0%` quando os custos totais são zero. | Stack Overflow — JavaScript Division |
+| 7 | **Políticas RLS da tabela `profiles` expunham dados a utilizadores anónimos** — A tabela não tinha uma política explícita de negação para acessos não autenticados. | Faltava uma política RLS para o role `anon`, que por defeito no PostgreSQL pode aceder a tabelas sem políticas de negação explícita. | Criação de política `"Deny anonymous access to profiles" ON profiles FOR SELECT TO anon USING (false)` que nega explicitamente qualquer acesso não autenticado (Referência 4 — Supabase Docs). | Supabase Documentation — RLS Policies |
+
+### 6.6.1. Análise do Processo de Depuração
+
+O processo de identificação e resolução de bugs seguiu geralmente estes passos:
+
+1. **Reprodução:** Identificar os passos exatos que causavam o erro
+2. **Diagnóstico:** Utilizar as ferramentas de desenvolvimento do navegador (Console, Network) e os logs do servidor para localizar a causa
+3. **Pesquisa:** Consultar a documentação oficial das tecnologias envolvidas (React Query, Supabase, Zod)
+4. **Correção:** Implementar a solução e testar exaustivamente
+5. **Prevenção:** Quando possível, adicionar validações para prevenir erros semelhantes no futuro
+
+Esta abordagem metódica, combinada com a consulta regular da documentação oficial, permitiu resolver todos os problemas críticos identificados durante a fase de testes.
+
 ---
 
 # VII. RESULTADOS E DISCUSSÃO
@@ -1870,10 +1946,10 @@ As animações e transições implementadas contribuem significativamente para u
 
 ### 8.2.1. Dificuldades Encontradas
 
-1. **Gestão de estados complexos:** A coordenação entre diferentes componentes e estados exigiu atenção especial
-2. **Row Level Security:** Definição de políticas RLS adequadas para diferentes cenários
-3. **Integração de IA:** Ajuste do comportamento do chatbot para respostas relevantes
-4. **Animações:** Balancear performance com efeitos visuais
+1. **Gestão de estados complexos:** A coordenação entre diferentes componentes e estados exigiu atenção especial. A utilização do React Query (Referência TanStack) permitiu simplificar significativamente a gestão de dados do servidor, resolvendo problemas de cache, revalidação e sincronização.
+2. **Row Level Security:** Definição de políticas RLS adequadas para diferentes cenários, nomeadamente o problema de recursão infinita documentado no Log de Erros (secção 6.6). A documentação oficial do Supabase (Referência 4) foi fundamental para compreender o padrão `SECURITY DEFINER`.
+3. **Integração de IA:** Ajuste do comportamento do chatbot para respostas relevantes e seguras. O desafio principal foi desenhar um System Prompt que limitasse eficazmente o âmbito das respostas ao contexto automóvel (ver secção 5.5.1 para detalhes).
+4. **Validação de dados:** A implementação de validações robustas para formatos portugueses (telemóvel, email) com Zod (Referência Zod) exigiu o desenvolvimento de expressões regulares personalizadas que contemplassem os vários formatos válidos (ver secção 6.6, erro #3).
 
 ### 8.2.2. Limitações Atuais
 
@@ -1881,29 +1957,29 @@ As animações e transições implementadas contribuem significativamente para u
 2. **Idioma único:** Apenas português
 3. **Sem notificações push:** Lembretes manuais (funcionalidade diferida para iteração futura)
 4. **Sem app mobile nativa:** Apenas web responsiva
+5. **Sem faturação certificada pela AT:** O sistema atual não emite faturas certificadas pela Autoridade Tributária (ver secção 8.3 para plano de implementação)
 
 ## 8.3. Melhorias Futuras
 
-### 8.3.1. Curto Prazo
+### 8.3.1. Curto Prazo (Prioridade Alta)
 
-1. **Modo escuro:** Implementar tema dark
-2. **Exportação de dados:** PDF/Excel de relatórios
-3. **Filtros avançados:** Pesquisa mais detalhada
-4. **Mais animações:** Loading skeletons
+1. **Faturação certificada pela AT:** Sendo o projeto destinado ao mercado português, a conformidade com a legislação fiscal é uma prioridade. A Autoridade Tributária e Aduaneira (AT) obriga a que todas as oficinas emitam faturas através de software certificado. A implementação incluiria: geração de faturas com número sequencial, comunicação automática à AT via webservice, emissão de documentos com QR Code obrigatório, e integração com o sistema SAF-T (PT). Esta é a melhoria mais crítica para tornar o Maslov Motors numa ferramenta de produção real, demonstrando consciência das obrigações legais do setor automóvel em Portugal.
+2. **Exportação de dados:** PDF/Excel de relatórios e faturas
+3. **Modo escuro:** Implementar tema dark
 
 ### 8.3.2. Médio Prazo
 
 1. **Lembretes automáticos:** Notificações email/push para manutenções
 2. **App mobile:** React Native ou PWA avançada
 3. **Multi-idioma:** Internacionalização
-4. **Integração pagamentos:** Sistema de faturação
+4. **Filtros avançados:** Pesquisa mais detalhada
 
 ### 8.3.3. Longo Prazo
 
-1. **Módulo de inventário:** Gestão de peças
-2. **Integração contabilística:** Export para software contabilidade
+1. **Módulo de inventário:** Gestão de peças e stock
+2. **Integração contabilística:** Export para software contabilidade (SAF-T completo)
 3. **Sistema de fidelização:** Pontos e descontos
-4. **Análise preditiva:** IA para previsão de manutenções
+4. **Análise preditiva:** IA para previsão de manutenções baseada no histórico
 5. **Multi-oficina:** Gestão de cadeia de oficinas
 
 ---
@@ -1912,15 +1988,15 @@ As animações e transições implementadas contribuem significativamente para u
 
 ## Documentação Oficial
 
-1. React Documentation. (2024). React – A JavaScript library for building user interfaces. https://react.dev/
+1. React Documentation. (2024). React – A JavaScript library for building user interfaces. https://react.dev/ — *Consultada extensivamente para a implementação de componentes funcionais, hooks personalizados (useAuth, useToast) e gestão de estado com Context API (Capítulos 2, 5).*
 
-2. TypeScript Documentation. (2024). TypeScript: JavaScript With Syntax For Types. https://www.typescriptlang.org/docs/
+2. TypeScript Documentation. (2024). TypeScript: JavaScript With Syntax For Types. https://www.typescriptlang.org/docs/ — *Utilizada para definir interfaces e tipos das entidades do sistema (Car, Service, Profile), garantindo segurança de tipos em todo o projeto (Capítulo 5).*
 
-3. Tailwind CSS Documentation. (2024). Tailwind CSS - Rapidly build modern websites without ever leaving your HTML. https://tailwindcss.com/docs
+3. Tailwind CSS Documentation. (2024). Tailwind CSS - Rapidly build modern websites without ever leaving your HTML. https://tailwindcss.com/docs — *Base para o sistema de design tokens, classes utilitárias responsivas e implementação de animações customizadas como fade-in, hover-lift e shimmer (Capítulos 4, 5).*
 
-4. Supabase Documentation. (2024). Supabase Docs. https://supabase.com/docs
+4. Supabase Documentation. (2024). Supabase Docs. https://supabase.com/docs — *Fonte principal para a implementação de Row Level Security (RLS), resolução do problema de recursão infinita com SECURITY DEFINER, configuração de Edge Functions e sistema de autenticação (Capítulos 5, 6.6).*
 
-5. Vite Documentation. (2024). Vite - Next Generation Frontend Tooling. https://vitejs.dev/guide/
+5. Vite Documentation. (2024). Vite - Next Generation Frontend Tooling. https://vitejs.dev/guide/ — *Consultada para a configuração do ambiente de desenvolvimento, path aliases e otimização do build de produção.*
 
 ## Livros e Artigos
 
@@ -1932,19 +2008,25 @@ As animações e transições implementadas contribuem significativamente para u
 
 ## Recursos Online
 
-9. MDN Web Docs. (2024). Web technology for developers. https://developer.mozilla.org/
+9. MDN Web Docs. (2024). Web technology for developers. https://developer.mozilla.org/ — *Referência para APIs nativas do browser utilizadas no streaming do chatbot (ReadableStream, TextDecoder) e validação de formulários.*
 
-10. Stack Overflow. (2024). Where Developers Learn, Share, & Build Careers. https://stackoverflow.com/
+10. Stack Overflow. (2024). Where Developers Learn, Share, & Build Careers. https://stackoverflow.com/ — *Consultado para resolver problemas específicos como divisão por zero no cálculo de margens e tratamento de expressões regulares para validação de telemóveis (secção 6.6).*
 
 11. GitHub. (2024). Various open-source repositories. https://github.com/
 
-12. Shadcn/ui. (2024). Beautifully designed components. https://ui.shadcn.com/
+12. Shadcn/ui. (2024). Beautifully designed components. https://ui.shadcn.com/ — *Biblioteca de componentes UI base utilizada para formulários, diálogos, tabelas e sistema de tabs no dashboard.*
+
+13. TanStack React Query Documentation. (2024). Powerful asynchronous state management. https://tanstack.com/query — *Utilizada para resolver problemas de gestão de estado do servidor, cache e revalidação automática de dados. Fundamental para eliminar o "flickering" na navegação entre tabs (secção 6.6, erro #2).*
+
+14. Zod Documentation. (2024). TypeScript-first schema validation. https://zod.dev/ — *Base para todas as validações de formulários do projeto, incluindo schemas personalizados para formato de telemóvel português, email e matrícula. Resolveu o problema de validação documentado na secção 6.6, erro #3.*
 
 ## Normas e Regulamentos
 
-13. Regulamento (UE) 2016/679 do Parlamento Europeu e do Conselho (RGPD).
+15. Regulamento (UE) 2016/679 do Parlamento Europeu e do Conselho (RGPD). — *Orientou a implementação do direito ao esquecimento (eliminação permanente de conta) e princípio de minimização de dados.*
 
-14. W3C. (2024). Web Content Accessibility Guidelines (WCAG) 2.1. https://www.w3.org/WAI/WCAG21/quickref/
+16. W3C. (2024). Web Content Accessibility Guidelines (WCAG) 2.1. https://www.w3.org/WAI/WCAG21/quickref/
+
+17. Autoridade Tributária e Aduaneira (AT). Requisitos técnicos para software de faturação certificado. https://info.portaldasfinancas.gov.pt/ — *Consultada para planear a futura implementação de faturação certificada (secção 8.3.1).*
 
 ---
 
