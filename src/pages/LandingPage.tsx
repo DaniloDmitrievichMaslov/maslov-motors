@@ -82,7 +82,7 @@ export default function LandingPage() {
                   Entrar
                 </Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/auth?tab=signup">
                 <Button size="sm" className="shadow-lg transition-smooth hover-lift hover:shadow-primary/25">
                   <span className="hidden sm:inline">Criar Conta</span>
                   <span className="sm:hidden">Entrar</span>
@@ -121,7 +121,7 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4 animate-fade-in-up opacity-0" style={{ animationDelay: '0.6s' }}>
-              <Link to="/auth" className="w-full sm:w-auto">
+              <Link to="/auth?tab=signup" className="w-full sm:w-auto">
                 <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-primary/25 text-base md:text-lg px-6 md:px-8 transition-smooth hover-lift hover:shadow-primary/40 animate-glow-pulse">
                   Começar Agora
                   <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -139,10 +139,10 @@ export default function LandingPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-12 md:mt-20 max-w-4xl mx-auto">
             {[
-              { value: "10+", label: "Anos Experiência" },
-              { value: "1500+", label: "Clientes Satisfeitos" },
-              { value: "5000+", label: "Serviços Realizados" },
-              { value: "100%", label: "Garantia" },
+              { value: "500+", label: "Clientes Satisfeitos" },
+              { value: "2000+", label: "Serviços Realizados" },
+              { value: "100%", label: "Transparência" },
+              { value: "⭐", label: "Qualidade Garantida" },
             ].map((stat, index) => (
               <Card 
                 key={index} 
@@ -284,7 +284,7 @@ export default function LandingPage() {
             Crie a sua conta gratuita e comece a gerir os seus veículos de forma simples e eficiente.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4 px-4">
-            <Link to="/auth" className="w-full sm:w-auto group">
+            <Link to="/auth?tab=signup" className="w-full sm:w-auto group">
               <Button size="lg" variant="secondary" className="w-full sm:w-auto shadow-xl text-base md:text-lg px-6 md:px-8 transition-smooth hover-lift">
                 Criar Conta Grátis
                 <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -317,18 +317,18 @@ export default function LandingPage() {
                   <Phone className="h-4 w-4 md:h-5 md:w-5 transition-smooth group-hover:scale-110" />
                   +351 933 468 899
                 </a>
-                <div className="flex items-start gap-3 text-muted-foreground text-sm md:text-base">
-                  <MapPin className="h-4 w-4 md:h-5 md:w-5 shrink-0 mt-0.5" />
-                  <span>Portugal</span>
-                </div>
+                <a href="https://maps.app.goo.gl/iAzsWZBUYkfBivhf9" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 text-muted-foreground hover:text-primary transition-smooth text-sm md:text-base group">
+                  <MapPin className="h-4 w-4 md:h-5 md:w-5 shrink-0 mt-0.5 transition-smooth group-hover:scale-110" />
+                  <span>Ver no Google Maps</span>
+                </a>
               </div>
             </div>
 
             <div>
               <h3 className="font-semibold mb-4">Horário</h3>
               <div className="space-y-2 text-muted-foreground text-sm md:text-base">
-                <p>Segunda a Sexta: 9h - 18h</p>
-                <p>Sábado: 9h - 13h</p>
+                <p>Segunda a Sexta: 9h–12h30 / 14h–19h</p>
+                <p>Sábado: 9h–13h</p>
                 <p>Domingo: Encerrado</p>
               </div>
             </div>

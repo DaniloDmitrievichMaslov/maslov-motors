@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ import { signUpSchema, signInSchema } from "@/lib/validations";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get("tab") === "signup" ? "signup" : "signin";
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -152,7 +154,7 @@ export default function Auth() {
           <CardDescription className="animate-fade-in" style={{ animationDelay: '0.2s' }}>Gestão de Oficina</CardDescription>
         </CardHeader>
         <CardContent className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          <Tabs defaultValue="signin" className="w-full">
+          <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="signin" className="transition-smooth">Entrar</TabsTrigger>
               <TabsTrigger value="signup" className="transition-smooth">Registar</TabsTrigger>
