@@ -140,9 +140,9 @@ export default function LandingPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mt-12 md:mt-20 max-w-4xl mx-auto">
             {[
               { value: "500+", label: "Clientes Satisfeitos" },
-              { value: "2000+", label: "Serviços Realizados" },
+              { value: "1000+", label: "Serviços Realizados" },
               { value: "100%", label: "Transparência" },
-              { value: "⭐", label: "Qualidade Garantida" },
+              { value: "98%", label: "Taxa de Satisfação" },
             ].map((stat, index) => (
               <Card 
                 key={index} 
