@@ -142,7 +142,7 @@ export default function LandingPage() {
               { value: "500+", label: "Clientes Satisfeitos" },
               { value: "1000+", label: "Serviços Realizados" },
               { value: "100%", label: "Transparência" },
-              { value: "98%", label: "Taxa de Satisfação" },
+              { value: "24h", label: "Tempo Médio de Resolução" },
             ].map((stat, index) => (
               <Card 
                 key={index} 
