@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
 import { signUpSchema, signInSchema } from "@/lib/validations";
+import ForgotPasswordSection from "@/components/auth/ForgotPasswordSection";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -198,6 +199,7 @@ export default function Auth() {
                     "Entrar"
                   )}
                 </Button>
+                <ForgotPasswordSection />
               </form>
             </TabsContent>
 
