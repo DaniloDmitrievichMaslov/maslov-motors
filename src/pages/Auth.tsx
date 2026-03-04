@@ -198,6 +198,20 @@ export default function Auth() {
                     "Entrar"
                   )}
                 </Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full text-sm text-muted-foreground"
+                  onClick={() => {
+                    toast({
+                      title: "Esqueceu a palavra-passe?",
+                      description: "Ligue para a oficina e nós iremos resolver isso num instante! 📞 +351 933 468 899",
+                      duration: 10000,
+                    });
+                  }}
+                >
+                  Esqueci a palavra-passe
+                </Button>
               </form>
             </TabsContent>
 
