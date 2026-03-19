@@ -334,8 +334,13 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="border-t border-border/30 mt-8 md:mt-12 pt-6 md:pt-8 text-center text-muted-foreground text-xs md:text-sm">
-            <p>&copy; {new Date().getFullYear()} Maslov Motors. Todos os direitos reservados.</p>
+          <div className="border-t border-border/30 mt-8 md:mt-12 pt-6 md:pt-8">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-6 mb-4 text-xs md:text-sm">
+              <Link to="/rgpd" className="text-muted-foreground hover:text-primary transition-smooth">Política de Privacidade & RGPD</Link>
+              <Link to="/termos" className="text-muted-foreground hover:text-primary transition-smooth">Termos de Responsabilidade</Link>
+              <Link to="/livro-reclamacoes" className="text-muted-foreground hover:text-primary transition-smooth">Livro de Reclamações</Link>
+            </div>
+            <p className="text-center text-muted-foreground text-xs md:text-sm">&copy; {new Date().getFullYear()} Maslov Motors. Todos os direitos reservados.</p>
           </div>
         </div>
       </footer>
