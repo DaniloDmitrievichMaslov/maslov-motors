@@ -7,6 +7,9 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import RGPD from "./pages/RGPD";
+import TermosResponsabilidade from "./pages/TermosResponsabilidade";
+import LivroReclamacoes from "./pages/LivroReclamacoes";
 import ChatBot from "./components/chat/ChatBot";
 
 const queryClient = new QueryClient();
