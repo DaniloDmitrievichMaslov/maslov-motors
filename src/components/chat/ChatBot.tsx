@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -25,15 +26,26 @@ const ChatBot = () => {
   }, [messages]);
 
   const streamChat = async (userMessages: Message[]) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) {
+      toast.error("Tens de iniciar sessão para usar o assistente.");
+      throw new Error("Unauthorized");
+    }
+
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        Authorization: `Bearer ${session.access_token}`,
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       },
       body: JSON.stringify({ messages: userMessages }),
     });
 
+    if (resp.status === 401) {
+      toast.error("Sessão expirada. Inicia sessão novamente.");
+      throw new Error("Unauthorized");
+    }
     if (resp.status === 429) {
       toast.error("Limite de pedidos excedido. Tenta novamente mais tarde.");
       throw new Error("Rate limited");
@@ -104,7 +116,7 @@ const ChatBot = () => {
       await streamChat(newMessages.filter(m => m.role === 'user' || m.content !== messages[0].content));
     } catch (error) {
       console.error('Chat error:', error);
-      if (!(error instanceof Error && (error.message === "Rate limited" || error.message === "Payment required"))) {
+      if (!(error instanceof Error && ["Rate limited", "Payment required", "Unauthorized"].includes(error.message))) {
         toast.error("Erro ao obter resposta. Tenta novamente.");
       }
     } finally {
