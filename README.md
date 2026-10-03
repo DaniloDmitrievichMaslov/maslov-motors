@@ -1,73 +1,102 @@
-# Welcome to your Lovable project
+# Maslov Motors — Automotive Workshop Management System
 
-## Project info
+A full-stack web application that digitizes the day-to-day operations of an auto repair shop: client self-service, workshop administration, service quoting, booking, reporting, and an AI assistant.
 
-**URL**: https://lovable.dev/projects/9bf86d85-cec5-4b91-bd2f-747446aeedd5
+**Live demo:** https://maslov-motors.lovable.app
 
-## How can I edit this code?
+## What it does
 
-There are several ways of editing your application.
+### Client area
+- Register/login with email and password (phone number required)
+- Register and manage multiple vehicles (brand, model, plate, year, color, mileage)
+- View full service history per vehicle
+- Request quotes and book appointments with date/time slots
+- Edit profile, manage cars
+- Built-in AI chatbot for maintenance questions
 
-**Use Lovable**
+### Admin area (back office)
+- Manage clients, vehicles, and services (full CRUD)
+- Quote request management and booking management
+- Automatic price and margin calculation (`final_price - parts_cost`, computed in the database)
+- Dashboard with revenue/costs charts, timeframes and top clients (Recharts)
+- Reports generation
+- Centralized admin actions (password resets, account deletion) via secure server functions
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9bf86d85-cec5-4b91-bd2f-747446aeedd5) and start prompting.
+## Tech stack
 
-Changes made via Lovable will be committed automatically to this repo.
+| Layer | Technology |
+| --- | --- |
+| Frontend | React 18, TypeScript, Tailwind CSS, shadcn/ui, React Router, React Query |
+| Validation | Zod (schemas shared by forms and dialogs) |
+| Charts | Recharts |
+| Backend | Lovable Cloud (Supabase): PostgreSQL, Auth, Row Level Security, Edge Functions (Deno) |
+| AI | Gemini via the Lovable AI Gateway (SSE streaming chatbot) |
 
-**Use your preferred IDE**
+## Security highlights
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Row Level Security (RLS)** enabled on every table — users can only reach their own data
+- **Roles stored in a dedicated `user_roles` table** (never on the profile), checked through a `SECURITY DEFINER` function `has_role()` to avoid recursive policy checks
+- New users always get the `client` role; only admins can change roles
+- **Sensitive operations** (password change, account deletion) run server-side in authenticated Edge Functions
+- Input validated on the frontend with strict **Zod** schemas
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Architecture
 
-Follow these steps:
+![Architecture diagram](public/diagrams/diagrama-arquitetura.png)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+More diagrams: [use case](public/diagrams/diagrama-casos-uso.png) · [ER model](public/diagrams/diagrama-fluxo-eliminacao.png) · [navigation flow](public/diagrams/diagrama-navegacao.png)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Transparency
 
-# Step 3: Install the necessary dependencies.
-npm i
+This project was built with the help of [Lovable](https://lovable.dev) as an AI-assisted development environment. My own work covers: requirements analysis, data model design, security policies (RLS + roles), form validation, testing of flows, and architecture decisions. The academic report (in `docs/`) documents all of it.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## Running locally
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/danilomaslov/maslov-motors.git
+cd maslov-motors
+
+# 2. Install dependencies
+npm install
+
+# 3. Configure environment (see .env.example)
+cp .env.example .env
+
+# 4. Start the dev server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Environment variables (see `.env.example`):
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `VITE_SUPABASE_URL` — project URL
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — public (anon) key, safe for the frontend
 
-**Use GitHub Codespaces**
+> Note: only public/anon keys ever go in this file. The service role key lives exclusively in server-side Edge Function secrets.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Scripts
 
-## What technologies are used for this project?
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Production build |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run unit tests (Vitest) |
 
-This project is built with:
+## Project structure
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+  components/        # UI components (dashboard client/admin, chatbot, dialogs)
+  pages/             # Routes (Landing, Auth, Dashboard, legal pages)
+  hooks/             # Custom hooks (useAuth, use-toast)
+  integrations/      # Generated Supabase client + typed schema
+  lib/               # Validation schemas (Zod), helpers
+supabase/
+  functions/         # Edge Functions (chat-assistant, update-password, delete-user)
+docs/               # Academic reports, user manual, diagrams source
+```
 
-## How can I deploy this project?
+## Author
 
-Simply open [Lovable](https://lovable.dev/projects/9bf86d85-cec5-4b91-bd2f-747446aeedd5) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+**Danilo Dmitrievich Maslov** — Professional Aptitude Project (PAP), Technical Course in Programming and Management of Information Systems (PGI23).
